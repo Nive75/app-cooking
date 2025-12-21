@@ -1,0 +1,171 @@
+# ============================================
+# DOCKER COMPOSE - Application de Gestion de Plats
+# ============================================
+# Ce fichier orchestre tous les services de l'application
+# Chaque service est un conteneur Docker isolé
+#
+# Les variables d'environnement sont chargées depuis :
+# - .env (fichier principal, chargé automatiquement)
+# - .env.mysql, .env.backend, .env.frontend (fichiers séparés)
+#
+# Pour charger les fichiers séparés, utilisez :
+# docker-compose --env-file .env.mysql --env-file .env.backend --env-file .env.frontend up
+# Ou créez un script shell pour simplifier
+
+services:
+  # ============================================
+  # SERVICE : Base de données MySQL
+  # ============================================
+  mysql:
+    image: mysql:8.0
+    container_name: app-cooking-mysql
+    restart: unless-stopped
+    environment:
+      # Ces variables sont chargées depuis .env.mysql
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      MYSQL_DATABASE: ${MYSQL_DATABASE}
+      MYSQL_USER: ${MYSQL_USER}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+    ports:
+      # Port externe:Port interne
+      # 3307:3306 signifie que MySQL sera accessible sur localhost:3307
+      # depuis votre machine, mais utilise le port 3306 dans le conteneur
+      - "${MYSQL_PORT}:3306"
+    volumes:
+      # Persistance des données : même si le conteneur est supprimé,
+      # les données restent dans mysql_data
+      - mysql_data:/var/lib/mysql
+    networks:
+      - app-network
+    healthcheck:
+      # Vérifie que MySQL est prêt avant de démarrer les autres services
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-p${MYSQL_ROOT_PASSWORD}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # ============================================
+  # SERVICE : Backend Nest.js (API)
+  # ============================================
+  backend:
+    build:
+      # Chemin vers le Dockerfile du backend Nest.js
+      context: ./backend
+      dockerfile: ../docker/backend/Dockerfile
+    container_name: app-cooking-backend
+    restart: unless-stopped
+    environment:
+      # Variables d'environnement chargées depuis .env.backend
+      NODE_ENV: ${NODE_ENV}
+      DATABASE_URL: ${DATABASE_URL}
+      PORT: 3000
+    ports:
+      # Nest.js sera accessible sur localhost:3000
+      - "${BACKEND_PORT}:3000"
+    volumes:
+      # Montage du code source pour le développement
+      # Cela permet de voir les changements sans reconstruire l'image
+      - ./backend:/app
+      - /app/node_modules
+      # Prisma nécessite le schéma
+      - ./backend/prisma:/app/prisma
+    depends_on:
+      mysql:
+        condition: service_healthy
+    networks:
+      - app-network
+    # Commande pour démarrer Nest.js en mode développement
+    command: npm run start:dev
+
+  # ============================================
+  # SERVICE : Frontend Symfony (Interface utilisateur) - PHP-FPM
+  # ============================================
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: ../docker/frontend/Dockerfile
+    container_name: app-cooking-frontend
+    restart: unless-stopped
+    environment:
+      # Variables d'environnement chargées depuis .env.frontend
+      APP_ENV: ${APP_ENV}
+      APP_SECRET: ${APP_SECRET}
+      DATABASE_URL: ${DATABASE_URL}
+    # PHP-FPM écoute sur le port 9000 (interne, pas exposé)
+    # Il est accessible uniquement via Nginx
+    volumes:
+      # Montage du code source pour le développement
+      - ./frontend:/var/www/html
+      - /var/www/html/var
+      - /var/www/html/vendor
+    depends_on:
+      backend:
+        condition: service_started
+      mysql:
+        condition: service_healthy
+    networks:
+      - app-network
+    # PHP-FPM démarre automatiquement via CMD dans le Dockerfile
+
+  # ============================================
+  # SERVICE : Nginx (Reverse proxy pour Symfony)
+  # ============================================
+  nginx:
+    image: nginx:alpine
+    container_name: app-cooking-nginx
+    restart: unless-stopped
+    ports:
+      # Nginx sera accessible sur localhost:8000
+      - "${FRONTEND_PORT}:80"
+    volumes:
+      # Configuration Nginx
+      - ./docker/frontend/nginx.conf:/etc/nginx/conf.d/default.conf:ro
+      # Code source Symfony (lecture seule pour Nginx)
+      - ./frontend:/var/www/html:ro
+    depends_on:
+      - frontend
+    networks:
+      - app-network
+
+  # ============================================
+  # SERVICE : phpMyAdmin (Interface de gestion MySQL)
+  # ============================================
+  phpmyadmin:
+    image: phpmyadmin:latest
+    container_name: app-cooking-phpmyadmin
+    restart: unless-stopped
+    environment:
+      # Configuration phpMyAdmin
+      PMA_HOST: mysql
+      PMA_PORT: 3306
+      PMA_USER: ${MYSQL_USER}
+      PMA_PASSWORD: ${MYSQL_PASSWORD}
+      # Optionnel : configuration avancée
+      UPLOAD_LIMIT: 20M
+    ports:
+      # phpMyAdmin sera accessible sur localhost:8080
+      - "${PHPMYADMIN_PORT:-8080}:80"
+    depends_on:
+      mysql:
+        condition: service_healthy
+    networks:
+      - app-network
+
+# ============================================
+# VOLUMES
+# ============================================
+# Les volumes persistent les données même après
+# la suppression des conteneurs
+volumes:
+  mysql_data:
+    driver: local
+
+# ============================================
+# RÉSEAUX
+# ============================================
+# Tous les services peuvent communiquer entre eux
+# via le réseau app-network
+networks:
+  app-network:
+    driver: bridge
+

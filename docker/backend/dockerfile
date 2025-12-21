@@ -1,0 +1,46 @@
+# ============================================
+# Dockerfile pour Backend Nest.js
+# ============================================
+# Ce Dockerfile configure l'environnement pour Nest.js
+# avec Node.js et Prisma ORM
+
+# Étape 1 : Image de base Node.js (dernière version LTS)
+FROM node:20-alpine
+
+# Étape 2 : Métadonnées (optionnel mais recommandé)
+LABEL maintainer="app-cooking"
+LABEL description="Backend Nest.js avec Prisma ORM"
+
+# Étape 3 : Définir le répertoire de travail
+WORKDIR /app
+
+# Étape 4 : Installer les dépendances système nécessaires
+# Prisma nécessite des outils pour compiler les binaires natifs
+RUN apk add --no-cache \
+    openssl \
+    libc6-compat
+
+# Étape 5 : Copier les fichiers de dépendances
+# On copie d'abord package.json et package-lock.json pour bénéficier
+# du cache Docker (les dépendances ne changent pas souvent)
+COPY package*.json ./
+COPY prisma ./prisma/
+
+# Étape 6 : Installer les dépendances Node.js
+RUN npm ci
+
+# Étape 7 : Générer le client Prisma
+# Prisma génère un client TypeScript à partir du schéma
+RUN npx prisma generate
+
+# Étape 8 : Copier le reste du code source
+COPY . .
+
+# Étape 9 : Exposer le port (Nest.js écoute sur 3000 par défaut)
+EXPOSE 3000
+
+# Étape 10 : Commande par défaut
+# En développement, on utilisera 'npm run start:dev' depuis docker-compose
+# En production, on pourrait utiliser 'npm run start:prod'
+CMD ["npm", "run", "start:dev"]
+

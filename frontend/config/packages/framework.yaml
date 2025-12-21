@@ -1,0 +1,15 @@
+# Voir : https://symfony.com/doc/current/reference/configuration/framework.html
+framework:
+    secret: '%env(APP_SECRET)%'
+
+    # Note : la session ne sera démarrée QUE si vous lisez ou écrivez dedans.
+    session: true
+
+    #esi: true
+    #fragments: true
+
+when@test:
+    framework:
+        test: true
+        session:
+            storage_factory_id: session.storage.factory.mock_file

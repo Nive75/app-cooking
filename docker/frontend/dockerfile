@@ -1,0 +1,76 @@
+# ============================================
+# Dockerfile pour Frontend Symfony
+# ============================================
+# Ce Dockerfile configure PHP-FPM + Nginx pour Symfony
+# Architecture multi-stage pour optimiser la taille de l'image
+
+# ============================================
+# STAGE 1 : PHP-FPM
+# ============================================
+FROM php:8.3-fpm-alpine AS php
+
+# Métadonnées
+LABEL maintainer="app-cooking"
+LABEL description="Frontend Symfony avec PHP-FPM"
+
+# Installer les dépendances système et extensions PHP nécessaires pour Symfony
+RUN apk add --no-cache \
+    # Outils de base
+    git \
+    curl \
+    libpng-dev \
+    libzip-dev \
+    zip \
+    unzip \
+    oniguruma-dev \
+    # Pour composer
+    icu-dev \
+    # Pour MySQL/PDO
+    mysql-client \
+    && docker-php-ext-install \
+    pdo_mysql \
+    mysqli \
+    zip \
+    intl \
+    opcache \
+    && docker-php-ext-enable opcache
+
+# Installer Composer (gestionnaire de dépendances PHP)
+COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
+
+# Définir le répertoire de travail
+WORKDIR /var/www/html
+
+# Copier les fichiers de dépendances PHP
+COPY composer.json composer.lock* ./
+
+# Installer les dépendances PHP (sans les scripts pour l'instant)
+RUN composer install --no-scripts --no-autoloader --prefer-dist
+
+# Copier le reste du code source
+COPY . .
+
+# Compléter l'installation de Composer (scripts, autoloader)
+RUN composer dump-autoload --optimize
+
+# Créer le répertoire var pour les fichiers temporaires Symfony
+RUN mkdir -p var/cache var/log \
+    && chown -R www-data:www-data var
+
+# ============================================
+# STAGE FINAL : PHP-FPM
+# ============================================
+# PHP-FPM écoute sur le port 9000 (TCP)
+# Nginx sera dans un service séparé dans docker-compose
+FROM php AS final
+
+# Configuration PHP-FPM pour écouter sur TCP (pour Docker)
+RUN sed -i 's/listen = 127.0.0.1:9000/listen = 0.0.0.0:9000/' /usr/local/etc/php-fpm.d/www.conf \
+    && sed -i 's/listen = \/run\/php\/php-fpm.sock/listen = 0.0.0.0:9000/' /usr/local/etc/php-fpm.d/www.conf || true
+
+# Exposer le port 9000 (PHP-FPM)
+EXPOSE 9000
+
+# Démarrer PHP-FPM
+CMD ["php-fpm"]
+

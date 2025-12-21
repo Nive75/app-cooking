@@ -1,0 +1,16 @@
+// ============================================
+// Schéma Prisma pour l'application de gestion de plats
+// ============================================
+// Ce fichier définit la structure de votre base de données
+// Documentation : https://pris.ly/d/prisma-schema
+//
+// Pour accélérer vos requêtes ou faciliter la mise à l'échelle avec des fonctions serverless ou edge,
+// essayez Prisma Accelerate : https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+}
