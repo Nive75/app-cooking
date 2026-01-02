@@ -1,0 +1,45 @@
+{# Header principal #}
+<header class="bg-white border-b border-gray-200 shadow-sm">
+    <div class="flex items-center justify-between px-6 py-4">
+        {# Titre de la page #}
+        <div>
+            <h1 class="text-2xl font-bold text-dark-blue">
+                {% block page_title %}Tableau de bord{% endblock %}
+            </h1>
+            <p class="text-sm text-gray-600 mt-1">
+                {% block page_subtitle %}Bienvenue, Marie! Voici un aperçu de vos recettes{% endblock %}
+            </p>
+        </div>
+
+        {# Actions du header (recherche, notifications, profil) #}
+        <div class="flex items-center space-x-4">
+            {# Barre de recherche #}
+            <div class="relative">
+                <input type="text" 
+                       placeholder="Rechercher une recette..." 
+                       class="pl-10 pr-4 py-2 w-64 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-green focus:border-transparent">
+                <svg class="w-5 h-5 text-gray-400 absolute left-3 top-1/2 transform -translate-y-1/2" 
+                     fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                </svg>
+            </div>
+
+            {# Notifications #}
+            <button class="relative p-2 text-gray-600 hover:text-dark-blue hover:bg-light-blue rounded-lg transition-colors">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
+                </svg>
+                {# Badge de notification #}
+                <span class="absolute top-1 right-1 w-2 h-2 bg-primary-green rounded-full"></span>
+            </button>
+
+            {# Profil utilisateur (mini) #}
+            <div class="flex items-center space-x-3">
+                <div class="w-10 h-10 bg-primary-green rounded-full flex items-center justify-center cursor-pointer hover:bg-opacity-90 transition-colors">
+                    <span class="text-white font-semibold text-sm">MD</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</header>
+

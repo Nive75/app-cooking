@@ -1,0 +1,34 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Variables CSS globales */
+:root {
+  --color-primary-green: #A4BD01;
+  --color-light-blue: #EBF2FA;
+  --color-dark-blue: #06668C;
+  --color-white: #FFFFFF;
+  --color-gray-light: #F5F5F5;
+  --color-gray-medium: #CCCCCC;
+  --color-gray-dark: #666666;
+}
+
+/* Styles de base */
+body {
+  @apply bg-gray-50 text-dark-blue;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+}
+
+/* Classes utilitaires personnalisées */
+.btn-primary {
+  @apply bg-primary-green text-white font-semibold py-2 px-4 rounded-lg hover:bg-opacity-90 transition-all duration-200;
+}
+
+.btn-secondary {
+  @apply bg-transparent border-2 border-dark-blue text-dark-blue font-semibold py-2 px-4 rounded-lg hover:bg-dark-blue hover:text-white transition-all duration-200;
+}
+
+.card {
+  @apply bg-white rounded-xl shadow-sm border border-gray-200 p-6 hover:shadow-md transition-shadow duration-200;
+}
+

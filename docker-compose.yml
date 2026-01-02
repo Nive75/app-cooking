@@ -6,40 +6,41 @@
 #
 # Les variables d'environnement sont chargées depuis :
 # - .env (fichier principal, chargé automatiquement)
-# - .env.mysql, .env.backend, .env.frontend (fichiers séparés)
+# - .env.backend, .env.frontend (fichiers séparés, optionnel)
 #
 # Pour charger les fichiers séparés, utilisez :
-# docker-compose --env-file .env.mysql --env-file .env.backend --env-file .env.frontend up
+# docker-compose --env-file .env.backend --env-file .env.frontend up
 # Ou créez un script shell pour simplifier
 
 services:
   # ============================================
-  # SERVICE : Base de données MySQL
+  # SERVICE : Base de données PostgreSQL
   # ============================================
-  mysql:
-    image: mysql:8.0
-    container_name: app-cooking-mysql
+  postgres:
+    image: postgres:16-alpine
+    container_name: app-cooking-postgres
     restart: unless-stopped
     environment:
-      # Ces variables sont chargées depuis .env.mysql
-      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
-      MYSQL_DATABASE: ${MYSQL_DATABASE}
-      MYSQL_USER: ${MYSQL_USER}
-      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+      # Ces variables sont chargées depuis .env
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DATABASE}
     ports:
       # Port externe:Port interne
-      # 3307:3306 signifie que MySQL sera accessible sur localhost:3307
-      # depuis votre machine, mais utilise le port 3306 dans le conteneur
-      - "${MYSQL_PORT}:3306"
+      # 5433:5432 signifie que PostgreSQL sera accessible sur localhost:5433
+      # depuis votre machine, mais utilise le port 5432 dans le conteneur
+      - "${POSTGRES_PORT}:5432"
     volumes:
       # Persistance des données : même si le conteneur est supprimé,
-      # les données restent dans mysql_data
-      - mysql_data:/var/lib/mysql
+      # les données restent dans postgres_data
+      - postgres_data:/var/lib/postgresql/data
+      # Script d'initialisation : chargé automatiquement au premier démarrage
+      - ./docker/postgres/init.sql:/docker-entrypoint-initdb.d/init.sql:ro
     networks:
       - app-network
     healthcheck:
-      # Vérifie que MySQL est prêt avant de démarrer les autres services
-      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-p${MYSQL_ROOT_PASSWORD}"]
+      # Vérifie que PostgreSQL est prêt avant de démarrer les autres services
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DATABASE}"]
       interval: 10s
       timeout: 5s
       retries: 5
@@ -70,7 +71,7 @@ services:
       # Prisma nécessite le schéma
       - ./backend/prisma:/app/prisma
     depends_on:
-      mysql:
+      postgres:
         condition: service_healthy
     networks:
       - app-network
@@ -101,7 +102,7 @@ services:
     depends_on:
       backend:
         condition: service_started
-      mysql:
+      postgres:
         condition: service_healthy
     networks:
       - app-network
@@ -128,25 +129,26 @@ services:
       - app-network
 
   # ============================================
-  # SERVICE : phpMyAdmin (Interface de gestion MySQL)
+  # SERVICE : pgAdmin (Interface de gestion PostgreSQL)
   # ============================================
-  phpmyadmin:
-    image: phpmyadmin:latest
-    container_name: app-cooking-phpmyadmin
+  pgadmin:
+    image: dpage/pgadmin4:latest
+    container_name: app-cooking-pgadmin
     restart: unless-stopped
     environment:
-      # Configuration phpMyAdmin
-      PMA_HOST: mysql
-      PMA_PORT: 3306
-      PMA_USER: ${MYSQL_USER}
-      PMA_PASSWORD: ${MYSQL_PASSWORD}
-      # Optionnel : configuration avancée
-      UPLOAD_LIMIT: 20M
+      # Configuration pgAdmin
+      PGADMIN_DEFAULT_EMAIL: ${PGADMIN_EMAIL:-admin@admin.com}
+      PGADMIN_DEFAULT_PASSWORD: ${PGADMIN_PASSWORD:-admin}
+      PGADMIN_CONFIG_SERVER_MODE: 'False'
+      PGADMIN_CONFIG_MASTER_PASSWORD_REQUIRED: 'False'
     ports:
-      # phpMyAdmin sera accessible sur localhost:8080
-      - "${PHPMYADMIN_PORT:-8080}:80"
+      # pgAdmin sera accessible sur localhost:8080
+      - "${PGADMIN_PORT:-8080}:80"
+    volumes:
+      # Persistance des configurations pgAdmin
+      - pgadmin_data:/var/lib/pgadmin
     depends_on:
-      mysql:
+      postgres:
         condition: service_healthy
     networks:
       - app-network
@@ -157,7 +159,9 @@ services:
 # Les volumes persistent les données même après
 # la suppression des conteneurs
 volumes:
-  mysql_data:
+  postgres_data:
+    driver: local
+  pgadmin_data:
     driver: local
 
 # ============================================
