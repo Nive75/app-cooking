@@ -17,6 +17,10 @@ build/
 .env.frontend
 .env.dev
 .env.*.example
+*env*.example
+docker-compose.env.example
+env.backend.example
+env.frontend.example
 docker-compose.override.yml
 
 # IDE
