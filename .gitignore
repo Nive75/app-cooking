@@ -9,12 +9,14 @@ build/
 
 # Environment files
 .env
-.env.dev
+.env.*
 .env.local
 .env.*.local
 .env.mysql
 .env.backend
 .env.frontend
+.env.dev
+.env.*.example
 docker-compose.override.yml
 
 # IDE
