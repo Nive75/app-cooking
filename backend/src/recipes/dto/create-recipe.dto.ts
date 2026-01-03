@@ -1,4 +1,4 @@
-import { IsString, IsOptional, IsInt, IsNotEmpty, MaxLength } from 'class-validator';
+import { IsString, IsOptional, IsInt, IsNotEmpty, MaxLength, IsBoolean } from 'class-validator';
 
 const MAX_TITLE_LENGTH = 255;
 
@@ -20,5 +20,9 @@ export class CreateRecipeDto {
   @IsString()
   @MaxLength(500)
   image_url?: string;
+
+  @IsOptional()
+  @IsBoolean()
+  is_favorite?: boolean;
 }
 

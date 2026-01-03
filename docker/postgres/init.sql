@@ -22,6 +22,7 @@ CREATE TABLE IF NOT EXISTS recipes (
     description TEXT NOT NULL,  -- Texte libre avec ingrédients + étapes (peut être en markdown)
     temps_preparation INTEGER,  -- Temps en minutes
     image_url VARCHAR(500),     -- URL de l'image (optionnel)
+    is_favorite BOOLEAN DEFAULT FALSE, -- Recette favorite ou non
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
@@ -29,12 +30,14 @@ CREATE TABLE IF NOT EXISTS recipes (
 -- Index pour améliorer les performances de recherche
 CREATE INDEX IF NOT EXISTS idx_recipes_titre ON recipes(titre);
 CREATE INDEX IF NOT EXISTS idx_recipes_created_at ON recipes(created_at);
+CREATE INDEX IF NOT EXISTS idx_recipes_is_favorite ON recipes(is_favorite);
 
 -- Commentaires sur la table
 COMMENT ON TABLE recipes IS 'Stocke les recettes avec leurs informations de base';
 COMMENT ON COLUMN recipes.description IS 'Texte libre avec ingrédients + étapes (peut être en markdown)';
 COMMENT ON COLUMN recipes.temps_preparation IS 'Temps en minutes';
 COMMENT ON COLUMN recipes.image_url IS 'URL de l''image (optionnel)';
+COMMENT ON COLUMN recipes.is_favorite IS 'Recette favorite ou non';
 
 -- ============================================
 -- TABLE : meal_plan
