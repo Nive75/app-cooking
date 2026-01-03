@@ -8,7 +8,7 @@ export class MealPlanService {
   constructor(private prisma: PrismaService) {}
 
   async create(createMealPlanDto: CreateMealPlanDto) {
-    return this.prisma.mealPlan.create({
+    const args = {
       data: {
         date: new Date(createMealPlanDto.date),
         moment: createMealPlanDto.moment,
@@ -18,22 +18,24 @@ export class MealPlanService {
       include: {
         recipe: true,
       },
-    });
+    };
+    return this.prisma.mealPlan.create(args);
   }
 
   async findAll() {
-    return this.prisma.mealPlan.findMany({
+    const args = {
       include: {
         recipe: true,
       },
       orderBy: {
         date: 'desc',
       },
-    });
+    } as const;
+    return this.prisma.mealPlan.findMany(args);
   }
 
   async findByDateRange(startDate: string, endDate: string) {
-    return this.prisma.mealPlan.findMany({
+    const args = {
       where: {
         date: {
           gte: new Date(startDate),
@@ -46,7 +48,8 @@ export class MealPlanService {
       orderBy: {
         date: 'asc',
       },
-    });
+    } as const;
+    return this.prisma.mealPlan.findMany(args);
   }
 
   async findOne(id: number) {
@@ -81,21 +84,23 @@ export class MealPlanService {
       updateData.note = updateMealPlanDto.note;
     }
 
-    return this.prisma.mealPlan.update({
+    const args = {
       where: { id },
       data: updateData,
       include: {
         recipe: true,
       },
-    });
+    };
+    return this.prisma.mealPlan.update(args);
   }
 
   async remove(id: number) {
     const mealPlan = await this.findOne(id);
 
-    return this.prisma.mealPlan.delete({
+    const args = {
       where: { id },
-    });
+    };
+    return this.prisma.mealPlan.delete(args);
   }
 }
 

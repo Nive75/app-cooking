@@ -55,7 +55,7 @@ function computeFortnightPeriod(now: Date) {
   const periodStart = startOfWeekMonday(anchorStart);
   const periodEnd = endOfWeekSunday(anchorEnd);
 
-  return {
+  const period = {
     kind,
     today,
     anchorStart,
@@ -63,6 +63,7 @@ function computeFortnightPeriod(now: Date) {
     periodStart,
     periodEnd,
   };
+  return period;
 }
 
 @Injectable()
@@ -107,7 +108,7 @@ export class DashboardService {
               (1000 * 60 * 60 * 24),
           );
 
-    return {
+    const summary = {
       period: {
         kind,
         // anchors are the "01-15" or "16-end" raw bounds
@@ -125,6 +126,7 @@ export class DashboardService {
         latestDaysAgo,
       },
     };
+    return summary;
   }
 }
 
