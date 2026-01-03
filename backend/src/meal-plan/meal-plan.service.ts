@@ -65,7 +65,7 @@ export class MealPlanService {
   }
 
   async update(id: number, updateMealPlanDto: UpdateMealPlanDto) {
-    await this.findOne(id);
+    const mealPlan = await this.findOne(id);
 
     const updateData: any = {};
     if (updateMealPlanDto.date) {
@@ -91,7 +91,7 @@ export class MealPlanService {
   }
 
   async remove(id: number) {
-    await this.findOne(id);
+    const mealPlan = await this.findOne(id);
 
     return this.prisma.mealPlan.delete({
       where: { id },

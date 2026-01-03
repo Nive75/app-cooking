@@ -107,7 +107,7 @@ export class DashboardService {
               (1000 * 60 * 60 * 24),
           );
 
-    return ({
+    return {
       period: {
         kind,
         // anchors are the "01-15" or "16-end" raw bounds
@@ -124,7 +124,7 @@ export class DashboardService {
         latestCreatedAt: latestCreatedAt ? formatLocalDate(latestCreatedAt) : null,
         latestDaysAgo,
       },
-    });
+    };
   }
 }
 
