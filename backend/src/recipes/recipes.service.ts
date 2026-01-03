@@ -37,7 +37,7 @@ export class RecipesService {
   }
 
   async update(id: number, updateRecipeDto: UpdateRecipeDto) {
-    const recipe = await this.findOne(id);
+    await this.findOne(id);
 
     return this.prisma.recipe.update({
       where: { id },
@@ -46,7 +46,7 @@ export class RecipesService {
   }
 
   async remove(id: number) {
-    const recipe = await this.findOne(id);
+    await this.findOne(id);
 
     return this.prisma.recipe.delete({
       where: { id },

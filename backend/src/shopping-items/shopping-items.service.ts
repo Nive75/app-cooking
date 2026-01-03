@@ -45,7 +45,7 @@ export class ShoppingItemsService {
   }
 
   async update(id: number, updateShoppingItemDto: UpdateShoppingItemDto) {
-    const shoppingItem = await this.findOne(id);
+    await this.findOne(id);
 
     return this.prisma.shoppingItem.update({
       where: { id },
@@ -65,7 +65,7 @@ export class ShoppingItemsService {
   }
 
   async remove(id: number) {
-    const shoppingItem = await this.findOne(id);
+    await this.findOne(id);
 
     return this.prisma.shoppingItem.delete({
       where: { id },
