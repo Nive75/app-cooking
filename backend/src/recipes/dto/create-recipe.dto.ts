@@ -1,28 +1,28 @@
-import { IsString, IsOptional, IsInt, IsNotEmpty, MaxLength, IsBoolean } from 'class-validator';
+import { IsString, IsOptional, IsInt, IsNotEmpty, MaxLength, IsBoolean } from 'class-validator'
 
-const MAX_TITLE_LENGTH = 255;
+const MAX_TITLE_LENGTH = 255
 
 export class CreateRecipeDto {
   @IsString()
   @IsNotEmpty()
   @MaxLength(MAX_TITLE_LENGTH)
-  titre: string;
+  titre: string
 
   @IsString()
   @IsNotEmpty()
-  description: string;
+  description: string
 
   @IsOptional()
   @IsInt()
-  temps_preparation?: number;
+  temps_preparation?: number
 
   @IsOptional()
   @IsString()
   @MaxLength(500)
-  image_url?: string;
+  image_url?: string
 
   @IsOptional()
   @IsBoolean()
-  is_favorite?: boolean;
+  is_favorite?: boolean
 }
 

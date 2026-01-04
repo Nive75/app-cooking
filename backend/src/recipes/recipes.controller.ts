@@ -21,17 +21,17 @@ export class RecipesController {
   @Post()
   @HttpCode(HttpStatus.CREATED)
   create(@Body() createRecipeDto: CreateRecipeDto) {
-    return this.recipesService.create(createRecipeDto);
+    return this.recipesService.create(createRecipeDto)
   }
 
   @Get()
   findAll() {
-    return this.recipesService.findAll();
+    return this.recipesService.findAll()
   }
 
   @Get(':id')
   findOne(@Param('id', ParseIntPipe) id: number) {
-    return this.recipesService.findOne(id);
+    return this.recipesService.findOne(id)
   }
 
   @Patch(':id')
@@ -39,13 +39,13 @@ export class RecipesController {
     @Param('id', ParseIntPipe) id: number,
     @Body() updateRecipeDto: UpdateRecipeDto,
   ) {
-    return this.recipesService.update(id, updateRecipeDto);
+    return this.recipesService.update(id, updateRecipeDto)
   }
 
   @Delete(':id')
   @HttpCode(HttpStatus.NO_CONTENT)
   remove(@Param('id', ParseIntPipe) id: number) {
-    return this.recipesService.remove(id);
+    return this.recipesService.remove(id)
   }
 }
 

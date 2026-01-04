@@ -22,20 +22,20 @@ export class MealPlanController {
   @Post()
   @HttpCode(HttpStatus.CREATED)
   create(@Body() createMealPlanDto: CreateMealPlanDto) {
-    return this.mealPlanService.create(createMealPlanDto);
+    return this.mealPlanService.create(createMealPlanDto)
   }
 
   @Get()
   findAll(@Query('startDate') startDate?: string, @Query('endDate') endDate?: string) {
     if (startDate && endDate) {
-      return this.mealPlanService.findByDateRange(startDate, endDate);
+      return this.mealPlanService.findByDateRange(startDate, endDate)
     }
-    return this.mealPlanService.findAll();
+    return this.mealPlanService.findAll()
   }
 
   @Get(':id')
   findOne(@Param('id', ParseIntPipe) id: number) {
-    return this.mealPlanService.findOne(id);
+    return this.mealPlanService.findOne(id)
   }
 
   @Patch(':id')
@@ -43,13 +43,13 @@ export class MealPlanController {
     @Param('id', ParseIntPipe) id: number,
     @Body() updateMealPlanDto: UpdateMealPlanDto,
   ) {
-    return this.mealPlanService.update(id, updateMealPlanDto);
+    return this.mealPlanService.update(id, updateMealPlanDto)
   }
 
   @Delete(':id')
   @HttpCode(HttpStatus.NO_CONTENT)
   remove(@Param('id', ParseIntPipe) id: number) {
-    return this.mealPlanService.remove(id);
+    return this.mealPlanService.remove(id)
   }
 }
 

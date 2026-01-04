@@ -100,13 +100,12 @@ export class DashboardService {
     ]);
 
     const latestCreatedAt = latestRecipe?.created_at ?? null;
-    const latestDaysAgo =
-      latestCreatedAt == null
-        ? null
-        : Math.floor(
-            (startOfLocalDay(new Date()).getTime() - startOfLocalDay(latestCreatedAt).getTime()) /
-              (1000 * 60 * 60 * 24),
-          );
+    let latestDaysAgo: number | null = null;
+    if (latestCreatedAt) {
+      const nowStart = startOfLocalDay(new Date()).getTime();
+      const createdStart = startOfLocalDay(latestCreatedAt).getTime();
+      latestDaysAgo = Math.floor((nowStart - createdStart) / (1000 * 60 * 60 * 24));
+    }
 
     const summary = {
       period: {

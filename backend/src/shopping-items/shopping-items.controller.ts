@@ -22,20 +22,20 @@ export class ShoppingItemsController {
   @Post()
   @HttpCode(HttpStatus.CREATED)
   create(@Body() createShoppingItemDto: CreateShoppingItemDto) {
-    return this.shoppingItemsService.create(createShoppingItemDto);
+    return this.shoppingItemsService.create(createShoppingItemDto)
   }
 
   @Get()
   findAll(@Query('unchecked') unchecked?: string) {
     if (unchecked === 'true') {
-      return this.shoppingItemsService.findUnchecked();
+      return this.shoppingItemsService.findUnchecked()
     }
-    return this.shoppingItemsService.findAll();
+    return this.shoppingItemsService.findAll()
   }
 
   @Get(':id')
   findOne(@Param('id', ParseIntPipe) id: number) {
-    return this.shoppingItemsService.findOne(id);
+    return this.shoppingItemsService.findOne(id)
   }
 
   @Patch(':id')
@@ -43,24 +43,24 @@ export class ShoppingItemsController {
     @Param('id', ParseIntPipe) id: number,
     @Body() updateShoppingItemDto: UpdateShoppingItemDto,
   ) {
-    return this.shoppingItemsService.update(id, updateShoppingItemDto);
+    return this.shoppingItemsService.update(id, updateShoppingItemDto)
   }
 
   @Patch(':id/toggle')
   toggleCheck(@Param('id', ParseIntPipe) id: number) {
-    return this.shoppingItemsService.toggleCheck(id);
+    return this.shoppingItemsService.toggleCheck(id)
   }
 
   @Delete(':id')
   @HttpCode(HttpStatus.NO_CONTENT)
   remove(@Param('id', ParseIntPipe) id: number) {
-    return this.shoppingItemsService.remove(id);
+    return this.shoppingItemsService.remove(id)
   }
 
   @Delete('checked/all')
   @HttpCode(HttpStatus.NO_CONTENT)
   removeChecked() {
-    return this.shoppingItemsService.removeChecked();
+    return this.shoppingItemsService.removeChecked()
   }
 }
 
