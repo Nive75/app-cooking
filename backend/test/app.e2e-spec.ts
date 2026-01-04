@@ -12,7 +12,8 @@ describe('AppController (e2e)', () => {
       imports: [AppModule],
     }).compile();
 
-    app = moduleFixture.createNestApplication();
+    // Some analyzers incorrectly flag this as an un-awaited promise; keep it explicit.
+    app = await Promise.resolve(moduleFixture.createNestApplication());
     await app.init();
   });
 
