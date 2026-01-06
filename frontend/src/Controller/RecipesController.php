@@ -15,5 +15,13 @@ class RecipesController extends AbstractController
             'page_title' => 'Mes Recettes',
         ]);
     }
+
+    #[Route('/recipes/new', name: 'app_recipes_new')]
+    public function new(): Response
+    {
+        return $this->render('recipes/new.html.twig', [
+            'page_title' => 'Créer une recette',
+        ]);
+    }
 }
 

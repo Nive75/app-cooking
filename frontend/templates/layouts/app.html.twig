@@ -6,7 +6,7 @@
         {% include 'components/sidebar.html.twig' %}
 
         {# Contenu principal avec marge pour la sidebar fixe #}
-        <div class="flex-1 flex flex-col overflow-hidden ml-64">
+        <div class="flex-1 flex flex-col overflow-hidden ml-0 md:ml-64">
             {# Header #}
             {% include 'components/header.html.twig' %}
 
@@ -17,4 +17,3 @@
         </div>
     </div>
 {% endblock %}
-

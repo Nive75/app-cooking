@@ -15,5 +15,13 @@ class PlanningController extends AbstractController
             'page_title' => 'Planification',
         ]);
     }
+
+    #[Route('/planning/new', name: 'app_planning_new')]
+    public function new(): Response
+    {
+        return $this->render('planning/new.html.twig', [
+            'page_title' => 'Planifier un repas',
+        ]);
+    }
 }
 

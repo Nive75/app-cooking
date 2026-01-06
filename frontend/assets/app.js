@@ -48,3 +48,34 @@ async function loadDashboardKpis() {
 
 void loadDashboardKpis();
 
+function initMobileSidebar() {
+  const sidebar = document.getElementById('app-sidebar');
+  const overlay = document.getElementById('sidebar-overlay');
+  const btnOpen = document.getElementById('sidebar-open');
+  const btnClose = document.getElementById('sidebar-close');
+
+  if (!sidebar || !overlay || !btnOpen || !btnClose) return;
+
+  const open = () => {
+    sidebar.classList.remove('-translate-x-full');
+    overlay.classList.remove('hidden');
+    document.body.classList.add('overflow-hidden');
+  };
+
+  const close = () => {
+    sidebar.classList.add('-translate-x-full');
+    overlay.classList.add('hidden');
+    document.body.classList.remove('overflow-hidden');
+  };
+
+  btnOpen.addEventListener('click', open);
+  btnClose.addEventListener('click', close);
+  overlay.addEventListener('click', close);
+
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') close();
+  });
+}
+
+initMobileSidebar();
+
