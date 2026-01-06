@@ -13,9 +13,9 @@ function formatLocalDate(d: Date) {
 }
 
 function startOfLocalDay(d: Date) {
-  const x = new Date(d);
-  x.setHours(0, 0, 0, 0);
-  return x;
+  const date = new Date(d);
+  date.setHours(0, 0, 0, 0);
+  return date;
 }
 
 // Monday = 0 ... Sunday = 6
@@ -24,15 +24,15 @@ function mondayIndex(d: Date) {
 }
 
 function startOfWeekMonday(d: Date) {
-  const x = startOfLocalDay(d);
-  x.setDate(x.getDate() - mondayIndex(x));
-  return x;
+  const date = startOfLocalDay(d);
+  date.setDate(date.getDate() - mondayIndex(date));
+  return date;
 }
 
 function endOfWeekSunday(d: Date) {
-  const x = startOfLocalDay(d);
-  x.setDate(x.getDate() + (6 - mondayIndex(x)));
-  return x;
+  const date = startOfLocalDay(d);
+  date.setDate(date.getDate() + (6 - mondayIndex(date)));
+  return date;
 }
 
 function lastDayOfMonth(year: number, month0: number) {
@@ -99,12 +99,20 @@ export class DashboardService {
       }),
     ]);
 
-    const latestCreatedAt = latestRecipe?.created_at ?? null;
+    let latestCreatedAt: Date | null = null;
+    if (latestRecipe) {
+      latestCreatedAt = latestRecipe.created_at;
+    }
     let latestDaysAgo: number | null = null;
     if (latestCreatedAt) {
       const nowStart = startOfLocalDay(new Date()).getTime();
       const createdStart = startOfLocalDay(latestCreatedAt).getTime();
       latestDaysAgo = Math.floor((nowStart - createdStart) / (1000 * 60 * 60 * 24));
+    }
+
+    let latestCreatedAtFormatted: string | null = null;
+    if (latestCreatedAt) {
+      latestCreatedAtFormatted = formatLocalDate(latestCreatedAt);
     }
 
     const summary = {
@@ -121,7 +129,7 @@ export class DashboardService {
         recipes: recipesCount,
         upcoming: upcomingCount,
         favorites: favoritesCount,
-        latestCreatedAt: latestCreatedAt ? formatLocalDate(latestCreatedAt) : null,
+        latestCreatedAt: latestCreatedAtFormatted,
         latestDaysAgo,
       },
     };
