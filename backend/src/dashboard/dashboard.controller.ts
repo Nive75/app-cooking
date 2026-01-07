@@ -10,6 +10,12 @@ export class DashboardController {
   summary(@Query('date') date?: string) {
     return this.dashboardService.getSummary(date);
   }
+
+  // Optional query param for debugging: ?date=YYYY-MM-DD
+  @Get('week')
+  week(@Query('date') date?: string) {
+    return this.dashboardService.getWeek(date);
+  }
 }
 
 

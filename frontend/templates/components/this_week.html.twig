@@ -1,0 +1,47 @@
+<section class="bg-white rounded-2xl border border-gray-200 p-6" data-this-week="1">
+    <div class="flex items-center justify-between gap-4">
+        <h2 class="text-lg font-semibold text-dark-blue">Cette semaine</h2>
+        <a href="{{ path('app_calendar') }}" class="text-primary-green font-semibold hover:underline">
+            Voir tout le calendrier →
+        </a>
+    </div>
+
+    <div class="mt-6 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-7 gap-4">
+        {% set labels = ['Lun','Mar','Mer','Jeu','Ven','Sam','Dim'] %}
+        {% for i in 0..6 %}
+            <div class="rounded-xl border border-gray-200 bg-white">
+                <div class="px-4 pt-4">
+                    <div class="flex items-baseline justify-between">
+                        <div class="text-sm text-gray-500" id="week-day-label-{{ i }}">{{ labels[i] }}</div>
+                        <div class="text-2xl font-semibold text-dark-blue" id="week-day-number-{{ i }}">—</div>
+                    </div>
+                    <div id="week-day-bar-{{ i }}" class="mt-3 h-0.5 bg-gray-200 rounded"></div>
+                </div>
+
+                <div class="p-4 space-y-3">
+                    <div id="week-slot-{{ i }}-lunch" class="rounded-xl border border-dashed border-gray-200 bg-white px-4 py-4 text-gray-300">
+                        <div class="flex items-center justify-center gap-2 font-semibold">
+                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 21h8m-8 0a4 4 0 01-4-4V7h16v10a4 4 0 01-4 4m-8 0V7m12 4h1a3 3 0 010 6h-1" />
+                            </svg>
+                            <span>Déjeuner</span>
+                        </div>
+                        <div id="week-slot-{{ i }}-lunch-title" class="mt-2 text-sm text-dark-blue"></div>
+                    </div>
+
+                    <div id="week-slot-{{ i }}-dinner" class="rounded-xl border border-dashed border-gray-200 bg-white px-4 py-4 text-gray-300">
+                        <div class="flex items-center justify-center gap-2 font-semibold">
+                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12.79A9 9 0 1111.21 3a7 7 0 109.79 9.79z" />
+                            </svg>
+                            <span>Dîner</span>
+                        </div>
+                        <div id="week-slot-{{ i }}-dinner-title" class="mt-2 text-sm text-dark-blue"></div>
+                    </div>
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+</section>
+
+

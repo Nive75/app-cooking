@@ -35,6 +35,19 @@ function endOfWeekSunday(d: Date) {
   return date;
 }
 
+function dayLabelsFr() {
+  return ['Lun', 'Mar', 'Mer', 'Jeu', 'Ven', 'Sam', 'Dim'] as const;
+}
+
+type MealMoment = 'lunch' | 'dinner';
+
+function normalizeMoment(momentRaw: string): MealMoment | null {
+  const m = (momentRaw || '').toLowerCase();
+  if (m.includes('dejeuner') || m.includes('déjeuner') || m.includes('lunch')) return 'lunch';
+  if (m.includes('diner') || m.includes('dîner') || m.includes('dinner')) return 'dinner';
+  return null;
+}
+
 function lastDayOfMonth(year: number, month0: number) {
   return new Date(year, month0 + 1, 0).getDate();
 }
@@ -134,6 +147,85 @@ export class DashboardService {
       },
     };
     return summary;
+  }
+
+  async getWeek(referenceDate?: string) {
+    const now = referenceDate ? new Date(`${referenceDate}T12:00:00`) : new Date();
+    const today = startOfLocalDay(now);
+    const weekStart = startOfWeekMonday(today);
+    const weekEnd = endOfWeekSunday(today);
+
+    const mealPlans = await this.prisma.mealPlan.findMany({
+      where: {
+        date: {
+          gte: weekStart,
+          lte: weekEnd,
+        },
+      },
+      include: {
+        recipe: {
+          select: {
+            titre: true,
+          },
+        },
+      },
+      orderBy: [{ date: 'asc' }, { moment: 'asc' }],
+    });
+
+    const byKey = new Map<string, { recipeTitle: string | null }>();
+    for (const mp of mealPlans) {
+      const normalized = normalizeMoment(mp.moment);
+      if (!normalized) continue;
+
+      const dayKey = formatLocalDate(startOfLocalDay(mp.date));
+      const key = `${dayKey}|${normalized}`;
+      byKey.set(key, { recipeTitle: mp.recipe?.titre ?? null });
+    }
+
+    const labels = dayLabelsFr();
+
+    type WeekDaySummary = {
+      date: string;
+      dayIndex: number;
+      label: (typeof labels)[number];
+      dayNumber: number;
+      isToday: boolean;
+      meals: {
+        lunch: { recipeTitle: string | null } | null;
+        dinner: { recipeTitle: string | null } | null;
+      };
+    };
+
+    const days: WeekDaySummary[] = [];
+    for (let i = 0; i < 7; i += 1) {
+      const d = new Date(weekStart);
+      d.setDate(weekStart.getDate() + i);
+      const dateStr = formatLocalDate(d);
+      const isToday = formatLocalDate(today) === dateStr;
+
+      const lunch = byKey.get(`${dateStr}|lunch`) ?? null;
+      const dinner = byKey.get(`${dateStr}|dinner`) ?? null;
+
+      days.push({
+        date: dateStr,
+        dayIndex: i,
+        label: labels[i],
+        dayNumber: d.getDate(),
+        isToday,
+        meals: {
+          lunch,
+          dinner,
+        },
+      });
+    }
+
+    return {
+      week: {
+        start: formatLocalDate(weekStart),
+        end: formatLocalDate(weekEnd),
+      },
+      days,
+    };
   }
 }
 
