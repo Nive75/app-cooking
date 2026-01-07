@@ -32,3 +32,32 @@ body {
   @apply bg-white rounded-xl shadow-sm border border-gray-200 p-6 hover:shadow-md transition-shadow duration-200;
 }
 
+/* Dashboard - "Cette semaine" */
+.week-slot {
+  @apply rounded-xl border px-4 py-4 transition-colors duration-150;
+}
+
+.week-slot--empty {
+  @apply border-dashed border-gray-200 bg-white text-gray-300;
+}
+
+.week-slot--filled-lunch {
+  @apply border-orange-200 bg-orange-50 text-orange-600;
+}
+
+.week-slot--filled-dinner {
+  @apply border-blue-200 bg-blue-50 text-blue-600;
+}
+
+.week-slot--hover-lunch {
+  @apply hover:border-blue-300 hover:ring-2 hover:ring-blue-200;
+}
+
+.week-slot--hover-dinner {
+  @apply hover:border-primary-green hover:ring-2 hover:ring-primary-green/30;
+}
+
+.week-slot__title {
+  @apply mt-2 text-sm text-dark-blue;
+}
+

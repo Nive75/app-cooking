@@ -19,24 +19,24 @@
                 </div>
 
                 <div class="p-4 space-y-3">
-                    <div id="week-slot-{{ i }}-lunch" class="rounded-xl border border-dashed border-gray-200 bg-white px-4 py-4 text-gray-300">
+                    <div id="week-slot-{{ i }}-lunch" class="week-slot week-slot--empty week-slot--hover-lunch">
                         <div class="flex items-center justify-center gap-2 font-semibold">
                             <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 21h8m-8 0a4 4 0 01-4-4V7h16v10a4 4 0 01-4 4m-8 0V7m12 4h1a3 3 0 010 6h-1" />
                             </svg>
                             <span>Déjeuner</span>
                         </div>
-                        <div id="week-slot-{{ i }}-lunch-title" class="mt-2 text-sm text-dark-blue"></div>
+                        <div id="week-slot-{{ i }}-lunch-title" class="week-slot__title"></div>
                     </div>
 
-                    <div id="week-slot-{{ i }}-dinner" class="rounded-xl border border-dashed border-gray-200 bg-white px-4 py-4 text-gray-300">
+                    <div id="week-slot-{{ i }}-dinner" class="week-slot week-slot--empty week-slot--hover-dinner">
                         <div class="flex items-center justify-center gap-2 font-semibold">
                             <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12.79A9 9 0 1111.21 3a7 7 0 109.79 9.79z" />
                             </svg>
                             <span>Dîner</span>
                         </div>
-                        <div id="week-slot-{{ i }}-dinner-title" class="mt-2 text-sm text-dark-blue"></div>
+                        <div id="week-slot-{{ i }}-dinner-title" class="week-slot__title"></div>
                     </div>
                 </div>
             </div>

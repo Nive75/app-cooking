@@ -179,7 +179,11 @@ export class DashboardService {
 
       const dayKey = formatLocalDate(startOfLocalDay(mp.date));
       const key = `${dayKey}|${normalized}`;
-      byKey.set(key, { recipeTitle: mp.recipe?.titre ?? null });
+      let recipeTitle: string | null = null;
+      if (mp.recipe && typeof mp.recipe.titre === 'string') {
+        recipeTitle = mp.recipe.titre;
+      }
+      byKey.set(key, { recipeTitle });
     }
 
     const labels = dayLabelsFr();
@@ -203,8 +207,15 @@ export class DashboardService {
       const dateStr = formatLocalDate(d);
       const isToday = formatLocalDate(today) === dateStr;
 
-      const lunch = byKey.get(`${dateStr}|lunch`) ?? null;
-      const dinner = byKey.get(`${dateStr}|dinner`) ?? null;
+      let lunch: { recipeTitle: string | null } | null = null;
+      const lunchKey = `${dateStr}|lunch`;
+      const lunchValue = byKey.get(lunchKey);
+      if (lunchValue !== undefined) lunch = lunchValue;
+
+      let dinner: { recipeTitle: string | null } | null = null;
+      const dinnerKey = `${dateStr}|dinner`;
+      const dinnerValue = byKey.get(dinnerKey);
+      if (dinnerValue !== undefined) dinner = dinnerValue;
 
       days.push({
         date: dateStr,
@@ -219,13 +230,16 @@ export class DashboardService {
       });
     }
 
-    return {
-      week: {
-        start: formatLocalDate(weekStart),
-        end: formatLocalDate(weekEnd),
-      },
+    const week = {
+      start: formatLocalDate(weekStart),
+      end: formatLocalDate(weekEnd),
+    };
+
+    const response = {
+      week,
       days,
     };
+    return response;
   }
 }
 

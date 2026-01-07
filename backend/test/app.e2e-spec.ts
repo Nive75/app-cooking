@@ -12,7 +12,7 @@ describe('AppController (e2e)', () => {
       imports: [AppModule],
     }).compile();
 
-    app = moduleFixture.createNestApplication();
+    app = await Promise.resolve(moduleFixture.createNestApplication());
     await app.init();
   });
 
