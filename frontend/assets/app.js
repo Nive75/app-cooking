@@ -1,6 +1,14 @@
 // Import CSS avec Tailwind
 import './css/app.css';
 
+// ============================================
+// Constantes globales
+// ============================================
+const SEARCH_DEBOUNCE_MS = 300; // Délai d'attente pour la recherche (ms)
+const MONTHS_PER_YEAR = 12; // Nombre de mois dans une année
+const DAYS_PER_WEEK = 7; // Nombre de jours dans une semaine
+const WEEKS_PER_CALENDAR = 6; // Nombre de semaines affichées dans le calendrier
+
 async function loadDashboardKpis() {
   const root = document.querySelector('[data-dashboard="1"]');
   if (!root) return;
@@ -84,13 +92,13 @@ async function loadThisWeek() {
     if (!res.ok) throw new Error(`HTTP ${res.status}`);
 
     const data = await res.json();
-    let days = [];
+    const weekDays = [];
     if (data && Array.isArray(data.days)) {
-      days = data.days;
+      weekDays.push(...data.days);
     }
 
-    for (let i = 0; i < 7; i += 1) {
-      const d = days[i];
+    for (let i = 0; i < DAYS_PER_WEEK; i += 1) {
+      const d = weekDays[i];
       const isToday = Boolean(d && d.isToday);
 
       const elLabel = document.getElementById(`week-day-label-${i}`);
@@ -165,24 +173,24 @@ function initMobileSidebar() {
 
   if (!sidebar || !overlay || !btnOpen || !btnClose) return;
 
-  const open = () => {
+  const handleOpen = () => {
     sidebar.classList.remove('-translate-x-full');
     overlay.classList.remove('hidden');
     document.body.classList.add('overflow-hidden');
   };
 
-  const close = () => {
+  const handleClose = () => {
     sidebar.classList.add('-translate-x-full');
     overlay.classList.add('hidden');
     document.body.classList.remove('overflow-hidden');
   };
 
-  btnOpen.addEventListener('click', open);
-  btnClose.addEventListener('click', close);
-  overlay.addEventListener('click', close);
+  btnOpen.addEventListener('click', handleOpen);
+  btnClose.addEventListener('click', handleClose);
+  overlay.addEventListener('click', handleClose);
 
   document.addEventListener('keydown', (e) => {
-    if (e.key === 'Escape') close();
+    if (e.key === 'Escape') handleClose();
   });
 }
 
@@ -204,7 +212,6 @@ function initRecipesPage() {
   const filterButtons = document.querySelectorAll('.recipe-filter-btn');
   const viewButtons = document.querySelectorAll('.view-toggle-btn');
   const searchInput = document.getElementById('recipe-search');
-  const countElement = document.getElementById('recipes-count-number');
 
   // Gestion des filtres par catégorie
   filterButtons.forEach((btn) => {
@@ -250,17 +257,19 @@ function initRecipesPage() {
     searchInput.addEventListener('input', (e) => {
       clearTimeout(searchTimeout);
       searchQuery = e.target.value.trim();
-      // Debounce : attendre 300ms après la dernière frappe
+      // Debounce : attendre après la dernière frappe
       searchTimeout = setTimeout(() => {
         loadRecipes();
-      }, 300);
+      }, SEARCH_DEBOUNCE_MS);
     });
   }
 
-  // Fonction pour charger les recettes (sera remplacé par un appel API)
+  // Fonction pour charger les recettes
   function loadRecipes() {
-    // Pour l'instant, on ne fait rien car il n'y a pas de données
-    // Cette fonction sera appelée plus tard avec un fetch vers l'API
+    // TODO: Remplacer par un appel API
+    // const res = await fetch(`/api/recipes?category=${currentCategory}&search=${searchQuery}`);
+    // const data = await res.json();
+    // renderRecipes(data.recipes || []);
     console.log('Chargement des recettes:', {
       category: currentCategory,
       search: searchQuery,
@@ -296,9 +305,6 @@ function initCalendarPage() {
     'Juillet', 'Août', 'Septembre', 'Octobre', 'Novembre', 'Décembre'
   ];
 
-  // Noms des jours de la semaine
-  const dayNames = ['Dimanche', 'Lundi', 'Mardi', 'Mercredi', 'Jeudi', 'Vendredi', 'Samedi'];
-
   // Fonction pour obtenir le premier jour du mois (0 = Dimanche, 1 = Lundi, etc.)
   function getFirstDayOfMonth(year, month) {
     const date = new Date(year, month, 1);
@@ -330,11 +336,9 @@ function initCalendarPage() {
 
     const firstDay = getFirstDayOfMonth(currentYear, currentMonth);
     const daysInMonth = getDaysInMonth(currentYear, currentMonth);
-    const today = new Date();
-    const isCurrentMonth = currentYear === today.getFullYear() && currentMonth === today.getMonth();
 
     // Ajouter les jours du mois précédent pour compléter la première semaine
-    const prevMonth = currentMonth === 0 ? 11 : currentMonth - 1;
+    const prevMonth = currentMonth === 0 ? MONTHS_PER_YEAR - 1 : currentMonth - 1;
     const prevYear = currentMonth === 0 ? currentYear - 1 : currentYear;
     const daysInPrevMonth = getDaysInMonth(prevYear, prevMonth);
 
@@ -353,10 +357,11 @@ function initCalendarPage() {
 
     // Ajouter les jours du mois suivant pour compléter la dernière semaine
     const totalCells = firstDay + daysInMonth;
-    const remainingCells = 42 - totalCells; // 6 semaines * 7 jours
+    const maxCells = WEEKS_PER_CALENDAR * DAYS_PER_WEEK;
+    const remainingCells = maxCells - totalCells;
     for (let day = 1; day <= remainingCells; day++) {
-      const nextMonth = currentMonth === 11 ? 0 : currentMonth + 1;
-      const nextYear = currentMonth === 11 ? currentYear + 1 : currentYear;
+      const nextMonth = currentMonth === MONTHS_PER_YEAR - 1 ? 0 : currentMonth + 1;
+      const nextYear = currentMonth === MONTHS_PER_YEAR - 1 ? currentYear + 1 : currentYear;
       const dayEl = createDayElement(nextYear, nextMonth, day, true);
       grid.appendChild(dayEl);
     }
@@ -369,37 +374,37 @@ function initCalendarPage() {
   function createDayElement(year, month, day, isOtherMonth, isTodayDay = false) {
     const dayEl = document.createElement('div');
     dayEl.className = `calendar-day ${isOtherMonth ? 'other-month' : ''} ${isTodayDay ? 'today' : ''}`;
-    
+
     // Créer le numéro du jour
     const dayNumber = document.createElement('div');
     dayNumber.className = 'calendar-day__number';
     dayNumber.textContent = String(day);
     dayEl.appendChild(dayNumber);
-    
+
     // Créer le conteneur des repas
     const mealsContainer = document.createElement('div');
     mealsContainer.className = 'calendar-day__meals';
     const dateStr = `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
     mealsContainer.setAttribute('data-date', dateStr);
     dayEl.appendChild(mealsContainer);
-    
+
     // Ajouter le bouton + si ce n'est pas un autre mois
     if (!isOtherMonth) {
       const addBtn = document.createElement('div');
       addBtn.className = 'calendar-day__add';
-      
+
       const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
       svg.setAttribute('class', 'w-6 h-6');
       svg.setAttribute('fill', 'none');
       svg.setAttribute('stroke', 'currentColor');
       svg.setAttribute('viewBox', '0 0 24 24');
-      
+
       const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
       path.setAttribute('stroke-linecap', 'round');
       path.setAttribute('stroke-linejoin', 'round');
       path.setAttribute('stroke-width', '2');
       path.setAttribute('d', 'M12 4v16m8-8H4');
-      
+
       svg.appendChild(path);
       addBtn.appendChild(svg);
       dayEl.appendChild(addBtn);
@@ -409,7 +414,7 @@ function initCalendarPage() {
     dayEl.addEventListener('click', () => {
       if (!isOtherMonth) {
         console.log('Jour cliqué:', year, month + 1, day);
-        // Navigation vers la création de repas pour ce jour
+        // TODO: Navigation vers la création de repas pour ce jour
         // window.location.href = `/planning/new?date=${dateStr}`;
       }
     });
@@ -420,12 +425,10 @@ function initCalendarPage() {
   // Fonction pour charger les repas d'un mois
   async function loadMealsForMonth() {
     try {
-      // Cette fonction sera remplacée par un appel API
+      // TODO: Remplacer par un appel API
       // const res = await fetch(`/api/calendar/meals?year=${currentYear}&month=${currentMonth + 1}`);
       // const data = await res.json();
       // renderMeals(data.meals);
-      
-      // Pour l'instant, on ne charge rien
       renderMeals([]);
     } catch (e) {
       console.warn('Erreur lors du chargement des repas:', e);
@@ -451,7 +454,7 @@ function initCalendarPage() {
   prevBtn.addEventListener('click', () => {
     currentMonth--;
     if (currentMonth < 0) {
-      currentMonth = 11;
+      currentMonth = MONTHS_PER_YEAR - 1;
       currentYear--;
     }
     renderCalendar();
@@ -460,7 +463,7 @@ function initCalendarPage() {
 
   nextBtn.addEventListener('click', () => {
     currentMonth++;
-    if (currentMonth > 11) {
+    if (currentMonth >= MONTHS_PER_YEAR) {
       currentMonth = 0;
       currentYear++;
     }
