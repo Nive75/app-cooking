@@ -76,10 +76,11 @@ jobs:
       - name: Installer Composer
         uses: php-actions/composer@v6
         with:
-          working-directory: frontend
+          working_dir: frontend
       
       # Étape 4 : Installer les dépendances
-      - run: composer install --no-interaction --prefer-dist
+      - name: Installer les dépendances Composer
+        run: composer install --no-interaction --prefer-dist
       
       # Étape 5 : Vérifier la syntaxe PHP
       - name: Vérifier la syntaxe PHP
