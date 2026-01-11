@@ -188,3 +188,88 @@ function initMobileSidebar() {
 
 initMobileSidebar();
 
+// ============================================
+// Page Recettes - Gestion des filtres et vues
+// ============================================
+function initRecipesPage() {
+  const container = document.getElementById('recipes-container');
+  if (!container) return;
+
+  // État de l'application
+  let currentCategory = 'all';
+  let currentView = 'grid';
+  let searchQuery = '';
+
+  // Éléments DOM
+  const filterButtons = document.querySelectorAll('.recipe-filter-btn');
+  const viewButtons = document.querySelectorAll('.view-toggle-btn');
+  const searchInput = document.getElementById('recipe-search');
+  const countElement = document.getElementById('recipes-count-number');
+
+  // Gestion des filtres par catégorie
+  filterButtons.forEach((btn) => {
+    btn.addEventListener('click', () => {
+      // Retirer la classe active de tous les boutons
+      filterButtons.forEach((b) => b.classList.remove('active-filter'));
+      // Ajouter la classe active au bouton cliqué
+      btn.classList.add('active-filter');
+      // Mettre à jour la catégorie active
+      currentCategory = btn.dataset.category || 'all';
+      // Recharger les recettes (sera remplacé par un appel API)
+      loadRecipes();
+    });
+  });
+
+  // Gestion du changement de vue (grille/liste)
+  viewButtons.forEach((btn) => {
+    btn.addEventListener('click', () => {
+      // Retirer la classe active de tous les boutons
+      viewButtons.forEach((b) => b.classList.remove('active-view'));
+      // Ajouter la classe active au bouton cliqué
+      btn.classList.add('active-view');
+      // Mettre à jour la vue active
+      currentView = btn.dataset.view || 'grid';
+      // Appliquer la classe à la grille
+      if (currentView === 'list') {
+        container.classList.add('list-view');
+        document.querySelectorAll('.recipe-card').forEach((card) => {
+          card.classList.add('list-view');
+        });
+      } else {
+        container.classList.remove('list-view');
+        document.querySelectorAll('.recipe-card').forEach((card) => {
+          card.classList.remove('list-view');
+        });
+      }
+    });
+  });
+
+  // Gestion de la recherche
+  if (searchInput) {
+    let searchTimeout;
+    searchInput.addEventListener('input', (e) => {
+      clearTimeout(searchTimeout);
+      searchQuery = e.target.value.trim();
+      // Debounce : attendre 300ms après la dernière frappe
+      searchTimeout = setTimeout(() => {
+        loadRecipes();
+      }, 300);
+    });
+  }
+
+  // Fonction pour charger les recettes (sera remplacé par un appel API)
+  function loadRecipes() {
+    // Pour l'instant, on ne fait rien car il n'y a pas de données
+    // Cette fonction sera appelée plus tard avec un fetch vers l'API
+    console.log('Chargement des recettes:', {
+      category: currentCategory,
+      search: searchQuery,
+      view: currentView,
+    });
+  }
+
+  // Initialisation
+  loadRecipes();
+}
+
+void initRecipesPage();

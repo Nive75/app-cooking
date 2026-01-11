@@ -1,5 +1,7 @@
 name: CI
 
+# Ce workflow s'exécute automatiquement à chaque push ou pull request
+# sur les branches main et develop
 on:
   push:
     branches: [ "main", "develop" ]
@@ -7,38 +9,81 @@ on:
     branches: [ "main", "develop" ]
 
 jobs:
+  # ============================================
+  # JOB : Tests Backend (Nest.js)
+  # ============================================
   backend:
-    name: Backend (NestJS)
+    name: Backend (NestJS + Prisma)
     runs-on: ubuntu-latest
+    
     defaults:
       run:
         working-directory: backend
+    
     steps:
+      # Étape 1 : Récupérer le code
       - uses: actions/checkout@v4
+      
+      # Étape 2 : Installer Node.js
       - uses: actions/setup-node@v4
         with:
-          node-version: 22
+          node-version: 20  # Version LTS utilisée dans Docker
           cache: npm
           cache-dependency-path: backend/package-lock.json
+      
+      # Étape 3 : Installer les dépendances
       - run: npm ci
-      - run: npx prisma generate
+      
+      # Étape 4 : Générer le client Prisma (nécessite DATABASE_URL)
+      - name: Générer Prisma Client
+        run: npx prisma generate
+        env:
+          DATABASE_URL: mysql://user:password@localhost:3306/test_db
+      
+      # Étape 5 : Compiler le code TypeScript
       - run: npm run build
+      
+      # Étape 6 : Vérifier les types TypeScript
       - run: npx tsc -p tsconfig.json --noEmit
+      
+      # Étape 7 : Exécuter les tests (si vous en avez)
+      # - run: npm test
 
-  frontend-assets:
-    name: Frontend assets (Encore)
+  # ============================================
+  # JOB : Tests Frontend (Symfony)
+  # ============================================
+  frontend:
+    name: Frontend (Symfony)
     runs-on: ubuntu-latest
+    
     defaults:
       run:
         working-directory: frontend
+    
     steps:
+      # Étape 1 : Récupérer le code
       - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      
+      # Étape 2 : Installer PHP
+      - name: Installer PHP
+        uses: shivammathur/setup-php@v2
         with:
-          node-version: 22
-          cache: npm
-          cache-dependency-path: frontend/package-lock.json
-      - run: npm ci
-      - run: npm run build
-
-
+          php-version: '8.3'
+          extensions: pdo_mysql, intl, zip
+          coverage: none
+      
+      # Étape 3 : Installer Composer
+      - name: Installer Composer
+        uses: php-actions/composer@v6
+        with:
+          working-directory: frontend
+      
+      # Étape 4 : Installer les dépendances
+      - run: composer install --no-interaction --prefer-dist
+      
+      # Étape 5 : Vérifier la syntaxe PHP
+      - name: Vérifier la syntaxe PHP
+        run: find . -name "*.php" -exec php -l {} \;
+      
+      # Étape 6 : Exécuter les tests (si vous en avez)
+      # - run: php bin/phpunit

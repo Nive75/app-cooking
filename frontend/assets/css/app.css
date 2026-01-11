@@ -50,14 +50,129 @@ body {
 }
 
 .week-slot--hover-lunch {
-  @apply hover:border-blue-300 hover:ring-2 hover:ring-blue-200;
+  @apply hover:border-blue-300 hover:ring-2 hover:ring-blue-200 hover:text-blue-600;
+}
+
+.week-slot--hover-lunch:hover svg {
+  @apply text-blue-600;
+}
+
+.week-slot--hover-lunch:hover span {
+  @apply text-blue-600;
 }
 
 .week-slot--hover-dinner {
-  @apply hover:border-primary-green hover:ring-2 hover:ring-primary-green/30;
+  @apply hover:border-primary-green hover:ring-2 hover:ring-primary-green/30 hover:text-primary-green;
+}
+
+.week-slot--hover-dinner:hover svg {
+  @apply text-primary-green;
+}
+
+.week-slot--hover-dinner:hover span {
+  @apply text-primary-green;
 }
 
 .week-slot__title {
   @apply mt-2 text-sm text-dark-blue;
 }
 
+/* Page Recettes */
+.recipe-filter-btn {
+  @apply bg-white border border-gray-200 text-gray-700 hover:bg-gray-50;
+}
+
+.recipe-filter-btn.active-filter {
+  @apply bg-primary-green text-white border-primary-green;
+}
+
+.view-toggle-btn {
+  @apply bg-white border border-gray-200 text-gray-600 hover:bg-gray-50;
+}
+
+.view-toggle-btn.active-view {
+  @apply bg-white border-gray-300 text-gray-700;
+}
+
+/* Grille de recettes */
+.recipes-grid {
+  @apply grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6;
+}
+
+.recipes-grid.list-view {
+  @apply grid-cols-1;
+}
+
+/* Carte de recette */
+.recipe-card {
+  @apply bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden transition-all duration-200 hover:shadow-md cursor-pointer;
+}
+
+.recipe-card__image {
+  @apply w-full h-48 object-cover bg-gray-200;
+}
+
+.recipe-card__content {
+  @apply p-4;
+}
+
+.recipe-card__header {
+  @apply relative mb-3;
+}
+
+.recipe-card__difficulty {
+  @apply absolute top-0 left-0 bg-white text-xs font-semibold px-2 py-1 rounded-md shadow-sm;
+}
+
+.recipe-card__difficulty--easy {
+  @apply text-green-600;
+}
+
+.recipe-card__difficulty--medium {
+  @apply text-orange-600;
+}
+
+.recipe-card__difficulty--hard {
+  @apply text-red-600;
+}
+
+.recipe-card__favorite {
+  @apply absolute top-0 right-0 p-2 cursor-pointer transition-colors duration-200;
+}
+
+.recipe-card__favorite.active {
+  @apply text-primary-green;
+}
+
+.recipe-card__favorite:not(.active) {
+  @apply text-gray-400 hover:text-gray-600;
+}
+
+.recipe-card__title {
+  @apply text-lg font-bold text-dark-blue mb-1;
+}
+
+.recipe-card__category {
+  @apply text-sm text-gray-500 mb-3;
+}
+
+.recipe-card__meta {
+  @apply flex items-center gap-4 text-sm text-gray-600;
+}
+
+.recipe-card__meta-item {
+  @apply flex items-center gap-1;
+}
+
+/* Vue liste */
+.recipe-card.list-view {
+  @apply flex flex-row;
+}
+
+.recipe-card.list-view .recipe-card__image {
+  @apply w-48 h-48 flex-shrink-0;
+}
+
+.recipe-card.list-view .recipe-card__content {
+  @apply flex-1 flex flex-col justify-between;
+}

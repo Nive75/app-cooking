@@ -1,10 +1,127 @@
 {% extends 'layouts/app.html.twig' %}
 
+{% block header %}
+    {% embed 'components/header.html.twig' %}
+        {% block page_title %}Mes Recettes{% endblock %}
+        
+        {% block page_subtitle %}
+            <p class="text-sm text-gray-500 mt-1" id="recipes-count">
+                <span id="recipes-count-number">0</span> recette(s) trouvée(s)
+            </p>
+        {% endblock %}
+        
+        {% block header_actions %}
+            <a 
+                href="{{ path('app_recipes_new') }}" 
+                class="inline-flex items-center justify-center gap-2 bg-primary-green text-white font-semibold px-4 py-2 rounded-lg hover:bg-opacity-90 transition-all duration-200 shadow-sm hover:shadow-md"
+            >
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+                </svg>
+                <span>Nouvelle recette</span>
+            </a>
+            <button class="relative p-2 text-gray-600 hover:text-dark-blue hover:bg-light-blue rounded-lg transition-colors">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
+                </svg>
+                <span class="absolute top-1 right-1 w-2 h-2 bg-primary-green rounded-full"></span>
+            </button>
+        {% endblock %}
+    {% endembed %}
+{% endblock %}
+
 {% block content %}
     <div class="space-y-6">
-        <div class="bg-white rounded-xl shadow-sm p-8 text-center">
-            <h2 class="text-2xl font-bold text-dark-blue mb-4">Mes Recettes</h2>
-            <p class="text-gray-600">Le contenu des recettes sera ajouté prochainement.</p>
+        {# Filtres et options de vue #}
+        <div class="bg-white rounded-xl shadow-sm p-4">
+            <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+                {# Filtres par catégorie #}
+                <div class="flex flex-wrap items-center gap-2">
+                    <button 
+                        class="recipe-filter-btn px-4 py-2 rounded-lg font-semibold text-sm transition-all duration-200 active-filter"
+                        data-category="all"
+                    >
+                        Toutes
+                    </button>
+                    <button 
+                        class="recipe-filter-btn px-4 py-2 rounded-lg font-semibold text-sm transition-all duration-200"
+                        data-category="entrees"
+                    >
+                        Entrées
+                    </button>
+                    <button 
+                        class="recipe-filter-btn px-4 py-2 rounded-lg font-semibold text-sm transition-all duration-200"
+                        data-category="plats"
+                    >
+                        Plats principaux
+                    </button>
+                    <button 
+                        class="recipe-filter-btn px-4 py-2 rounded-lg font-semibold text-sm transition-all duration-200"
+                        data-category="desserts"
+                    >
+                        Desserts
+                    </button>
+                    <button 
+                        class="recipe-filter-btn px-4 py-2 rounded-lg font-semibold text-sm transition-all duration-200"
+                        data-category="aperitifs"
+                    >
+                        Apéritifs
+                    </button>
+                    <button 
+                        class="recipe-filter-btn px-4 py-2 rounded-lg font-semibold text-sm transition-all duration-200"
+                        data-category="boissons"
+                    >
+                        Boissons
+                    </button>
+                </div>
+
+                {# Options de vue #}
+                <div class="flex items-center gap-2">
+                    {# Icône de tri/filtre (optionnel) #}
+                    <button 
+                        class="p-2 rounded-lg hover:bg-gray-100 transition-colors duration-200"
+                        title="Options de tri"
+                    >
+                        <svg class="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z" />
+                        </svg>
+                    </button>
+
+                    {# Vue grille (active par défaut) #}
+                    <button 
+                        class="view-toggle-btn active-view p-2 rounded-lg transition-all duration-200"
+                        data-view="grid"
+                        title="Vue grille"
+                    >
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z" />
+                        </svg>
+                    </button>
+
+                    {# Vue liste #}
+                    <button 
+                        class="view-toggle-btn p-2 rounded-lg text-gray-600 hover:bg-gray-100 transition-all duration-200"
+                        data-view="list"
+                        title="Vue liste"
+                    >
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+                        </svg>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        {# Grille de recettes #}
+        <div id="recipes-container" class="recipes-grid">
+            {# Les cartes de recettes seront ajoutées dynamiquement ici via JavaScript #}
+            <div class="col-span-full text-center py-12 text-gray-500">
+                <svg class="w-16 h-16 mx-auto mb-4 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                </svg>
+                <p class="text-lg font-semibold">Aucune recette pour le moment</p>
+                <p class="text-sm mt-2">Créez votre première recette pour commencer</p>
+            </div>
         </div>
     </div>
 {% endblock %}

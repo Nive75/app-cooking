@@ -8,7 +8,9 @@
         {# Contenu principal avec marge pour la sidebar fixe #}
         <div class="flex-1 flex flex-col overflow-hidden ml-0 md:ml-64">
             {# Header #}
-            {% include 'components/header.html.twig' %}
+            {% block header %}
+                {% include 'components/header.html.twig' %}
+            {% endblock %}
 
             {# Contenu de la page #}
             <main class="flex-1 overflow-y-auto bg-light-blue p-6">
