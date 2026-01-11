@@ -323,7 +323,10 @@ function initCalendarPage() {
 
   // Fonction pour générer la grille du calendrier
   function renderCalendar() {
-    grid.innerHTML = '';
+    // Vider la grille de manière sécurisée
+    while (grid.firstChild) {
+      grid.removeChild(grid.firstChild);
+    }
 
     const firstDay = getFirstDayOfMonth(currentYear, currentMonth);
     const daysInMonth = getDaysInMonth(currentYear, currentMonth);
@@ -362,25 +365,52 @@ function initCalendarPage() {
     monthYearEl.textContent = `${monthNames[currentMonth]} ${currentYear}`;
   }
 
-  // Fonction pour créer un élément de jour
+  // Fonction pour créer un élément de jour (sécurisée contre XSS)
   function createDayElement(year, month, day, isOtherMonth, isTodayDay = false) {
     const dayEl = document.createElement('div');
     dayEl.className = `calendar-day ${isOtherMonth ? 'other-month' : ''} ${isTodayDay ? 'today' : ''}`;
     
-    dayEl.innerHTML = `
-      <div class="calendar-day__number">${day}</div>
-      <div class="calendar-day__meals" data-date="${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}">
-        <!-- Les repas seront chargés dynamiquement ici -->
-      </div>
-      ${isOtherMonth ? '' : '<div class="calendar-day__add"><svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" /></svg></div>'}
-    `;
+    // Créer le numéro du jour
+    const dayNumber = document.createElement('div');
+    dayNumber.className = 'calendar-day__number';
+    dayNumber.textContent = String(day);
+    dayEl.appendChild(dayNumber);
+    
+    // Créer le conteneur des repas
+    const mealsContainer = document.createElement('div');
+    mealsContainer.className = 'calendar-day__meals';
+    const dateStr = `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+    mealsContainer.setAttribute('data-date', dateStr);
+    dayEl.appendChild(mealsContainer);
+    
+    // Ajouter le bouton + si ce n'est pas un autre mois
+    if (!isOtherMonth) {
+      const addBtn = document.createElement('div');
+      addBtn.className = 'calendar-day__add';
+      
+      const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+      svg.setAttribute('class', 'w-6 h-6');
+      svg.setAttribute('fill', 'none');
+      svg.setAttribute('stroke', 'currentColor');
+      svg.setAttribute('viewBox', '0 0 24 24');
+      
+      const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+      path.setAttribute('stroke-linecap', 'round');
+      path.setAttribute('stroke-linejoin', 'round');
+      path.setAttribute('stroke-width', '2');
+      path.setAttribute('d', 'M12 4v16m8-8H4');
+      
+      svg.appendChild(path);
+      addBtn.appendChild(svg);
+      dayEl.appendChild(addBtn);
+    }
 
     // Gestion du clic sur le jour
     dayEl.addEventListener('click', () => {
       if (!isOtherMonth) {
         console.log('Jour cliqué:', year, month + 1, day);
         // Navigation vers la création de repas pour ce jour
-        // window.location.href = `/planning/new?date=${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+        // window.location.href = `/planning/new?date=${dateStr}`;
       }
     });
 
