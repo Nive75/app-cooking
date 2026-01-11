@@ -85,15 +85,12 @@ jobs:
           DEFAULT_URI=http://localhost
           EOF
 
-      # Étape 4 : Installer Composer
-      - name: Installer Composer
+      # Étape 4 : Installer les dépendances Composer (sans scripts pour éviter cache:clear)
+      - name: Installer les dépendances Composer
         uses: php-actions/composer@v6
         with:
           working_dir: .
-
-      # Étape 5 : Installer les dépendances (sans scripts pour éviter cache:clear)
-      - name: Installer les dépendances Composer
-        run: composer install --no-interaction --prefer-dist --no-scripts
+          args: install --no-interaction --prefer-dist --no-scripts
 
       # Étape 6 : Vider le cache manuellement avec les variables d'environnement
       - name: Vider le cache Symfony

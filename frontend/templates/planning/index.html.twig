@@ -26,15 +26,23 @@
                     </svg>
                 </button>
                 
-                {# Bouton Valider #}
+                {# Bouton Modifier/Valider (état normal = Modifier) #}
                 <button 
-                    id="planning-validate-btn"
+                    id="planning-edit-btn"
                     class="inline-flex items-center justify-center gap-2 bg-primary-green text-white font-semibold px-4 py-2 rounded-lg hover:bg-opacity-90 transition-all duration-200 shadow-sm hover:shadow-md"
                 >
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
                     </svg>
-                    <span>Valider la planification</span>
+                    <span id="planning-edit-btn-text">Modifier la planification</span>
+                </button>
+                
+                {# Bouton Annuler (caché par défaut) #}
+                <button 
+                    id="planning-cancel-btn"
+                    class="hidden inline-flex items-center justify-center gap-2 bg-gray-200 text-gray-700 font-semibold px-4 py-2 rounded-lg hover:bg-gray-300 transition-all duration-200 shadow-sm"
+                >
+                    <span>Annuler</span>
                 </button>
                 
                 <button class="relative p-2 text-gray-600 hover:text-dark-blue hover:bg-light-blue rounded-lg transition-colors">
@@ -103,6 +111,133 @@
                         <svg class="w-6 h-6 text-primary-green" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
                         </svg>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    {# Modal de sélection de recette #}
+    <div id="planning-recipe-modal" class="hidden fixed inset-0 z-50 overflow-y-auto">
+        <div class="flex items-center justify-center min-h-screen px-4 pt-4 pb-20 text-center sm:block sm:p-0">
+            {# Overlay #}
+            <div class="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" id="planning-recipe-modal-overlay"></div>
+
+            {# Modal content #}
+            <div class="inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-4xl sm:w-full">
+                <div class="bg-white px-4 pt-5 pb-4 sm:p-6">
+                    <div class="flex items-center justify-between mb-4">
+                        <h3 class="text-lg font-bold text-dark-blue">Sélectionner une recette</h3>
+                        <button id="planning-recipe-modal-close" class="text-gray-400 hover:text-gray-600">
+                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                            </svg>
+                        </button>
+                    </div>
+                    
+                    {# Barre de recherche #}
+                    <div class="relative mb-4">
+                        <input
+                            type="text"
+                            id="planning-recipe-modal-search"
+                            placeholder="Rechercher une recette..."
+                            class="pl-10 pr-4 py-2 w-full border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-green focus:border-transparent"
+                        >
+                        <svg class="w-5 h-5 text-gray-400 absolute left-3 top-1/2 transform -translate-y-1/2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                        </svg>
+                    </div>
+
+                    {# Filtres par catégorie #}
+                    <div class="flex flex-wrap items-center gap-2 mb-4">
+                        <button 
+                            class="planning-recipe-filter-btn px-4 py-2 rounded-lg font-semibold text-sm transition-all duration-200 active-filter"
+                            data-category="all"
+                        >
+                            Toutes
+                        </button>
+                        <button 
+                            class="planning-recipe-filter-btn px-4 py-2 rounded-lg font-semibold text-sm transition-all duration-200"
+                            data-category="entrees"
+                        >
+                            Entrées
+                        </button>
+                        <button 
+                            class="planning-recipe-filter-btn px-4 py-2 rounded-lg font-semibold text-sm transition-all duration-200"
+                            data-category="plats"
+                        >
+                            Plats principaux
+                        </button>
+                        <button 
+                            class="planning-recipe-filter-btn px-4 py-2 rounded-lg font-semibold text-sm transition-all duration-200"
+                            data-category="desserts"
+                        >
+                            Desserts
+                        </button>
+                        <button 
+                            class="planning-recipe-filter-btn px-4 py-2 rounded-lg font-semibold text-sm transition-all duration-200"
+                            data-category="aperitifs"
+                        >
+                            Apéritifs
+                        </button>
+                        <button 
+                            class="planning-recipe-filter-btn px-4 py-2 rounded-lg font-semibold text-sm transition-all duration-200"
+                            data-category="boissons"
+                        >
+                            Boissons
+                        </button>
+                    </div>
+
+                    {# Liste des recettes #}
+                    <div id="planning-recipe-modal-list" class="max-h-96 overflow-y-auto">
+                        <div class="text-center py-12 text-gray-500">
+                            <svg class="w-16 h-16 mx-auto mb-4 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                            </svg>
+                            <p class="text-lg font-semibold">Chargement des recettes...</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    {# Modal de sélection de semaine #}
+    <div id="planning-week-modal" class="hidden fixed inset-0 z-50 overflow-y-auto">
+        <div class="flex items-center justify-center min-h-screen px-4 pt-4 pb-20 text-center sm:block sm:p-0">
+            {# Overlay #}
+            <div class="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" id="planning-week-modal-overlay"></div>
+
+            {# Modal content #}
+            <div class="inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full">
+                <div class="bg-white px-4 pt-5 pb-4 sm:p-6">
+                    <div class="flex items-center justify-between mb-4">
+                        <h3 class="text-lg font-bold text-dark-blue">Sélectionner une semaine</h3>
+                        <button id="planning-week-modal-close" class="text-gray-400 hover:text-gray-600">
+                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                            </svg>
+                        </button>
+                    </div>
+                    
+                    {# Navigation du calendrier #}
+                    <div class="flex items-center justify-between mb-4">
+                        <button id="planning-calendar-prev-month" class="p-2 rounded-lg hover:bg-gray-100">
+                            <svg class="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+                            </svg>
+                        </button>
+                        <h4 id="planning-calendar-month-year" class="text-lg font-semibold text-dark-blue">Janvier 2024</h4>
+                        <button id="planning-calendar-next-month" class="p-2 rounded-lg hover:bg-gray-100">
+                            <svg class="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+                            </svg>
+                        </button>
+                    </div>
+
+                    {# Mini-calendrier #}
+                    <div id="planning-week-calendar" class="grid grid-cols-7 gap-1">
+                        {# Les jours seront générés dynamiquement #}
                     </div>
                 </div>
             </div>

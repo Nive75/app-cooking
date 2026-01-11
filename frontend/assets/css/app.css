@@ -78,11 +78,13 @@ body {
 }
 
 /* Page Recettes */
-.recipe-filter-btn {
+.recipe-filter-btn,
+.planning-recipe-filter-btn {
   @apply bg-white border border-gray-200 text-gray-700 hover:bg-gray-50;
 }
 
-.recipe-filter-btn.active-filter {
+.recipe-filter-btn.active-filter,
+.planning-recipe-filter-btn.active-filter {
   @apply bg-primary-green text-white border-primary-green;
 }
 
@@ -281,4 +283,22 @@ body {
 
 .planning-meal-card__time {
   @apply flex items-center gap-1;
+}
+
+/* Mode édition de la planification */
+.planning-edit-mode .planning-meal-slot--empty {
+  @apply cursor-pointer border-primary-green/50;
+}
+
+.planning-edit-mode .planning-meal-slot--filled {
+  @apply cursor-pointer border-primary-green/50 hover:ring-2 hover:ring-primary-green/30;
+}
+
+/* Modal de sélection de semaine */
+#planning-week-modal {
+  @apply fixed inset-0 z-50 overflow-y-auto;
+}
+
+#planning-week-modal .bg-white {
+  @apply rounded-lg shadow-xl;
 }
