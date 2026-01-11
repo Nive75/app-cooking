@@ -27,26 +27,19 @@ export class IngredientsService {
       where.nom = { contains: filters.search };
     }
 
-    // Filtres nutritionnels
-    if (filters?.sans_lactose === true) {
-      where.sans_lactose = true;
-    }
+    const nutritionalFilters = [
+      { key: 'sans_lactose', prop: 'sans_lactose' },
+      { key: 'sans_gluten', prop: 'sans_gluten' },
+      { key: 'riche_proteines', prop: 'riche_proteines' },
+      { key: 'riche_fibres', prop: 'riche_fibres' },
+      { key: 'riche_vitamines', prop: 'riche_vitamines' },
+    ];
 
-    if (filters?.sans_gluten === true) {
-      where.sans_gluten = true;
-    }
-
-    if (filters?.riche_proteines === true) {
-      where.riche_proteines = true;
-    }
-
-    if (filters?.riche_fibres === true) {
-      where.riche_fibres = true;
-    }
-
-    if (filters?.riche_vitamines === true) {
-      where.riche_vitamines = true;
-    }
+    nutritionalFilters.forEach(filter => {
+      if (filters?.[filter.prop] === true) {
+        where[filter.prop] = true;
+      }
+    });
 
     return this.prisma.ingredient.findMany({
       where,
@@ -64,21 +57,23 @@ export class IngredientsService {
   }
 
   async findOne(id: number) {
-    const ingredient = await this.prisma.ingredient.findUnique({
-      where: { id },
-      include: {
-        recipeIngredients: {
-          include: {
-            recipe: {
-              select: {
-                id: true,
-                titre: true,
-                image_url: true,
-              },
-            },
+    const selectFields = {
+      id: true,
+      titre: true,
+      image_url: true,
+    };
+    const includeConfig = {
+      recipeIngredients: {
+        include: {
+          recipe: {
+            select: selectFields,
           },
         },
       },
+    };
+    const ingredient = await this.prisma.ingredient.findUnique({
+      where: { id },
+      include: includeConfig,
     });
 
     if (!ingredient) {

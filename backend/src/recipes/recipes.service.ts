@@ -15,7 +15,8 @@ export class RecipesService {
   async findAll(filters?: { category?: string; search?: string; favorites?: boolean }) {
     const where: any = {};
 
-    if (filters?.favorites) {
+    const hasFavorites = filters?.favorites === true;
+    if (hasFavorites) {
       where.is_favorite = true;
     }
 

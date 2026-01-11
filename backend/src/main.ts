@@ -7,16 +7,13 @@ const DEFAULT_PORT = 3000;
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
 
-  // Activer CORS pour permettre les appels depuis le frontend
   app.enableCors({
     origin: process.env.FRONTEND_URL || 'http://localhost:8000',
     credentials: true,
   });
 
-  // Préfixe global pour toutes les routes
   app.setGlobalPrefix('api');
 
-  // Validation automatique des DTOs
   app.useGlobalPipes(
     new ValidationPipe({
       whitelist: true,
@@ -25,7 +22,8 @@ async function bootstrap() {
     }),
   );
 
-  await app.listen(process.env.PORT ?? DEFAULT_PORT);
+  const port = process.env.PORT || DEFAULT_PORT;
+  await app.listen(port);
   console.log(`🚀 Backend API running on: http://localhost:${process.env.PORT ?? DEFAULT_PORT}/api`);
 }
 bootstrap();

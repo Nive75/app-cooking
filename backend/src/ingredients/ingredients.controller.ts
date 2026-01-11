@@ -34,14 +34,15 @@ export class IngredientsController {
     @Query('riche_fibres') richeFibres?: string,
     @Query('riche_vitamines') richeVitamines?: string,
   ) {
-    return this.ingredientsService.findAll({
+    const filters = {
       search,
       sans_lactose: sansLactose === 'true',
       sans_gluten: sansGluten === 'true',
       riche_proteines: richeProteines === 'true',
       riche_fibres: richeFibres === 'true',
       riche_vitamines: richeVitamines === 'true',
-    });
+    };
+    return this.ingredientsService.findAll(filters);
   }
 
   @Get(':id')
