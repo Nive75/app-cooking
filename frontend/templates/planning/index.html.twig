@@ -1,11 +1,111 @@
 {% extends 'layouts/app.html.twig' %}
 
+{% block header %}
+    {% embed 'components/header.html.twig' %}
+        {% block page_title %}Planification des Repas{% endblock %}
+        
+        {% block page_subtitle %}
+            <p class="text-sm text-gray-500 mt-1" id="planning-count">
+                <span id="planning-count-number">0</span> repas planifié(s) cette semaine
+            </p>
+        {% endblock %}
+        
+        {% block header_actions %}
+            <div class="flex items-center gap-3">
+                {# Sélecteur de semaine #}
+                <button 
+                    id="planning-week-selector"
+                    class="inline-flex items-center justify-center gap-2 bg-white border border-gray-300 text-gray-700 font-semibold px-4 py-2 rounded-lg hover:bg-gray-50 transition-all duration-200 shadow-sm"
+                >
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                    </svg>
+                    <span id="planning-week-text">Semaine du 22-28 Jan</span>
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                    </svg>
+                </button>
+                
+                {# Bouton Valider #}
+                <button 
+                    id="planning-validate-btn"
+                    class="inline-flex items-center justify-center gap-2 bg-primary-green text-white font-semibold px-4 py-2 rounded-lg hover:bg-opacity-90 transition-all duration-200 shadow-sm hover:shadow-md"
+                >
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                    </svg>
+                    <span>Valider la planification</span>
+                </button>
+                
+                <button class="relative p-2 text-gray-600 hover:text-dark-blue hover:bg-light-blue rounded-lg transition-colors">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
+                    </svg>
+                    <span class="absolute top-1 right-1 w-2 h-2 bg-primary-green rounded-full"></span>
+                </button>
+            </div>
+        {% endblock %}
+    {% endembed %}
+{% endblock %}
+
 {% block content %}
     <div class="space-y-6">
-        <div class="bg-white rounded-xl shadow-sm p-8 text-center">
-            <h2 class="text-2xl font-bold text-dark-blue mb-4">Planification</h2>
-            <p class="text-gray-600">Le contenu de la planification sera ajouté prochainement.</p>
+        {# Section Planning de la semaine #}
+        <div class="bg-white rounded-xl shadow-sm p-6">
+            <h2 class="text-xl font-bold text-dark-blue mb-6">Planning de la semaine</h2>
+            
+            {# Grille hebdomadaire #}
+            <div id="planning-week-grid" class="grid grid-cols-7 gap-4">
+                {# Les jours seront générés dynamiquement via JavaScript #}
+            </div>
+        </div>
+
+        {# Statistiques #}
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+            {# Total des repas #}
+            <div class="bg-white rounded-xl shadow-sm p-6">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-sm text-gray-600 mb-1">Total des repas</p>
+                        <p class="text-2xl font-bold text-dark-blue" id="planning-total-meals">0/14</p>
+                    </div>
+                    <div class="w-12 h-12 bg-primary-green/10 rounded-lg flex items-center justify-center">
+                        <svg class="w-6 h-6 text-primary-green" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                        </svg>
+                    </div>
+                </div>
+            </div>
+
+            {# Temps de préparation #}
+            <div class="bg-white rounded-xl shadow-sm p-6">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-sm text-gray-600 mb-1">Temps de préparation</p>
+                        <p class="text-2xl font-bold text-dark-blue" id="planning-total-time">~0h00</p>
+                    </div>
+                    <div class="w-12 h-12 bg-primary-green/10 rounded-lg flex items-center justify-center">
+                        <svg class="w-6 h-6 text-primary-green" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        </svg>
+                    </div>
+                </div>
+            </div>
+
+            {# Personnes #}
+            <div class="bg-white rounded-xl shadow-sm p-6">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-sm text-gray-600 mb-1">Personnes</p>
+                        <p class="text-2xl font-bold text-dark-blue" id="planning-people">4</p>
+                    </div>
+                    <div class="w-12 h-12 bg-primary-green/10 rounded-lg flex items-center justify-center">
+                        <svg class="w-6 h-6 text-primary-green" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
+                        </svg>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 {% endblock %}
-
