@@ -19,5 +19,6 @@ services:
     App\:
         resource: '../src/'
 
+
     # Ajoutez plus de définitions de services lorsque une configuration explicite est nécessaire
     # Notez que les dernières définitions *remplacent* toujours les précédentes

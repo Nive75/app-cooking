@@ -28,11 +28,21 @@ model Ingredient {
   id                Int                @id @default(autoincrement())
   nom               String              @db.VarChar(255)
   unite             String?             @db.VarChar(50)
+  sans_lactose      Boolean?            @default(false)
+  sans_gluten       Boolean?            @default(false)
+  riche_proteines   Boolean?            @default(false)
+  riche_fibres      Boolean?            @default(false)
+  riche_vitamines   Boolean?            @default(false)
   created_at        DateTime?           @default(now()) @db.Timestamp(6)
   updated_at        DateTime?           @default(now()) @updatedAt @db.Timestamp(6)
   recipeIngredients RecipeIngredient[]
 
   @@index([nom], map: "idx_ingredients_nom")
+  @@index([sans_lactose], map: "idx_ingredients_sans_lactose")
+  @@index([sans_gluten], map: "idx_ingredients_sans_gluten")
+  @@index([riche_proteines], map: "idx_ingredients_riche_proteines")
+  @@index([riche_fibres], map: "idx_ingredients_riche_fibres")
+  @@index([riche_vitamines], map: "idx_ingredients_riche_vitamines")
   @@map("ingredients")
 }
 

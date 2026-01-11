@@ -1,11 +1,11 @@
 {% extends 'layouts/app.html.twig' %}
 
-{% block page_title %}Créer une recette{% endblock %}
+{% block page_title %}Modifier la recette{% endblock %}
 
 {% block content %}
     <div class="space-y-6">
         <div class="bg-white rounded-xl shadow-sm p-8">
-            <h2 class="text-2xl font-bold text-dark-blue mb-6">Créer une recette</h2>
+            <h2 class="text-2xl font-bold text-dark-blue mb-6">Modifier la recette</h2>
             
             {# Messages flash #}
             {% for message in app.flashes('success') %}
@@ -65,7 +65,25 @@
                     </div>
                     
                     <div id="ingredients-list" class="space-y-4">
-                        {# Les ingrédients seront ajoutés ici dynamiquement #}
+                        {% for ingredient in form.ingredients %}
+                            <div class="ingredient-item bg-gray-50 p-4 rounded-lg border border-gray-200">
+                                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                    <div>
+                                        {{ form_label(ingredient.ingredient_id, null, {'label_attr': {'class': 'block text-sm font-semibold text-dark-blue mb-2'}}) }}
+                                        {{ form_widget(ingredient.ingredient_id) }}
+                                        {{ form_errors(ingredient.ingredient_id) }}
+                                    </div>
+                                    <div>
+                                        {{ form_label(ingredient.quantite, null, {'label_attr': {'class': 'block text-sm font-semibold text-dark-blue mb-2'}}) }}
+                                        {{ form_widget(ingredient.quantite) }}
+                                        {{ form_errors(ingredient.quantite) }}
+                                    </div>
+                                </div>
+                                <button type="button" class="mt-2 text-red-600 hover:text-red-800 text-sm font-semibold remove-ingredient-btn">
+                                    Supprimer
+                                </button>
+                            </div>
+                        {% endfor %}
                     </div>
                     
                     {# Prototype pour les nouveaux ingrédients #}
@@ -74,8 +92,11 @@
                     {{ form_errors(form.ingredients) }}
                 </div>
                 
-                <div class="pt-4">
+                <div class="pt-4 flex gap-4">
                     {{ form_widget(form.submit) }}
+                    <a href="{{ path('app_recipes') }}" class="flex-1 bg-gray-200 text-gray-700 px-6 py-3 rounded-lg font-semibold hover:bg-gray-300 transition-colors text-center">
+                        Annuler
+                    </a>
                 </div>
             
             {{ form_end(form) }}
@@ -116,7 +137,7 @@
                 
                 inputs.forEach(input => {
                     input.className = 'w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-green focus:border-transparent';
-                    if (input.type === 'text' && (!input.previousElementSibling || input.previousElementSibling.tagName !== 'LABEL')) {
+                    if (input.type === 'text' && !input.previousElementSibling || (input.previousElementSibling && input.previousElementSibling.tagName !== 'LABEL')) {
                         const label = document.createElement('label');
                         label.className = 'block text-sm font-semibold text-dark-blue mb-2';
                         label.textContent = 'Quantité';
@@ -145,12 +166,12 @@
                 addBtn.addEventListener('click', addIngredient);
             }
             
-            // Ajouter un ingrédient vide au chargement si la liste est vide
-            if (ingredientsList.children.length === 0) {
-                addIngredient();
-            }
+            // Gestion des boutons de suppression existants
+            document.querySelectorAll('.remove-ingredient-btn').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    this.closest('.ingredient-item').remove();
+                });
+            });
         });
     </script>
 {% endblock %}
-
-

@@ -1,4 +1,4 @@
-import { IsString, IsOptional, IsNotEmpty, MaxLength } from 'class-validator';
+import { IsString, IsOptional, IsNotEmpty, MaxLength, IsBoolean } from 'class-validator';
 
 const MAX_NAME_LENGTH = 255;
 const MAX_UNIT_LENGTH = 50;
@@ -13,4 +13,24 @@ export class CreateIngredientDto {
   @IsString()
   @MaxLength(MAX_UNIT_LENGTH)
   unite?: string;
+
+  @IsOptional()
+  @IsBoolean()
+  sans_lactose?: boolean;
+
+  @IsOptional()
+  @IsBoolean()
+  sans_gluten?: boolean;
+
+  @IsOptional()
+  @IsBoolean()
+  riche_proteines?: boolean;
+
+  @IsOptional()
+  @IsBoolean()
+  riche_fibres?: boolean;
+
+  @IsOptional()
+  @IsBoolean()
+  riche_vitamines?: boolean;
 }

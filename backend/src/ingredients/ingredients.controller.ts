@@ -26,8 +26,22 @@ export class IngredientsController {
   }
 
   @Get()
-  findAll(@Query('search') search?: string) {
-    return this.ingredientsService.findAll(search);
+  findAll(
+    @Query('search') search?: string,
+    @Query('sans_lactose') sansLactose?: string,
+    @Query('sans_gluten') sansGluten?: string,
+    @Query('riche_proteines') richeProteines?: string,
+    @Query('riche_fibres') richeFibres?: string,
+    @Query('riche_vitamines') richeVitamines?: string,
+  ) {
+    return this.ingredientsService.findAll({
+      search,
+      sans_lactose: sansLactose === 'true',
+      sans_gluten: sansGluten === 'true',
+      riche_proteines: richeProteines === 'true',
+      riche_fibres: richeFibres === 'true',
+      riche_vitamines: richeVitamines === 'true',
+    });
   }
 
   @Get(':id')

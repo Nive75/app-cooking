@@ -77,14 +77,16 @@ body {
   @apply mt-2 text-sm text-dark-blue;
 }
 
-/* Page Recettes */
+/* Page Recettes et Ingrédients */
 .recipe-filter-btn,
-.planning-recipe-filter-btn {
+.planning-recipe-filter-btn,
+.ingredient-filter-btn {
   @apply bg-white border border-gray-200 text-gray-700 hover:bg-gray-50;
 }
 
 .recipe-filter-btn.active-filter,
-.planning-recipe-filter-btn.active-filter {
+.planning-recipe-filter-btn.active-filter,
+.ingredient-filter-btn.active-filter {
   @apply bg-primary-green text-white border-primary-green;
 }
 
@@ -105,8 +107,9 @@ body {
   @apply grid-cols-1;
 }
 
-/* Carte de recette */
-.recipe-card {
+/* Carte de recette et d'ingrédient */
+.recipe-card,
+.ingredient-card {
   @apply bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden transition-all duration-200 hover:shadow-md cursor-pointer;
 }
 

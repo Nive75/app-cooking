@@ -13,11 +13,39 @@ export class IngredientsService {
     });
   }
 
-  async findAll(search?: string) {
+  async findAll(filters?: {
+    search?: string;
+    sans_lactose?: boolean;
+    sans_gluten?: boolean;
+    riche_proteines?: boolean;
+    riche_fibres?: boolean;
+    riche_vitamines?: boolean;
+  }) {
     const where: any = {};
 
-    if (search) {
-      where.nom = { contains: search };
+    if (filters?.search) {
+      where.nom = { contains: filters.search };
+    }
+
+    // Filtres nutritionnels
+    if (filters?.sans_lactose === true) {
+      where.sans_lactose = true;
+    }
+
+    if (filters?.sans_gluten === true) {
+      where.sans_gluten = true;
+    }
+
+    if (filters?.riche_proteines === true) {
+      where.riche_proteines = true;
+    }
+
+    if (filters?.riche_fibres === true) {
+      where.riche_fibres = true;
+    }
+
+    if (filters?.riche_vitamines === true) {
+      where.riche_vitamines = true;
     }
 
     return this.prisma.ingredient.findMany({
