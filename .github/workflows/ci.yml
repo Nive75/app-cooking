@@ -87,7 +87,10 @@ jobs:
 
       # Étape 4 : Installer Composer
       - name: Installer Composer
-        uses: php-actions/composer@v6
+        run: |
+          curl -sS https://getcomposer.org/installer | php
+          sudo mv composer.phar /usr/local/bin/composer
+          composer --version
       
       # Étape 5 : Installer les dépendances
       - name: Installer les dépendances
