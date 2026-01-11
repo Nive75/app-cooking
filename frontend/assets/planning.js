@@ -4,8 +4,6 @@
 
 import {
   DAYS_PER_WEEK,
-  MONTH_NAMES,
-  DAY_NAMES,
   formatDateString,
   formatDayHeader,
   formatWeekRange,

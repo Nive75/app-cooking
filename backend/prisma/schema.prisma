@@ -16,11 +16,39 @@ model Recipe {
   created_at        DateTime?  @default(now()) @db.Timestamp(6)
   updated_at        DateTime?  @default(now()) @updatedAt @db.Timestamp(6)
   mealPlans         MealPlan[]
+  recipeIngredients RecipeIngredient[]
 
   @@index([is_favorite], map: "idx_recipes_is_favorite")
   @@index([created_at], map: "idx_recipes_created_at")
   @@index([titre], map: "idx_recipes_titre")
   @@map("recipes")
+}
+
+model Ingredient {
+  id                Int                @id @default(autoincrement())
+  nom               String              @db.VarChar(255)
+  unite             String?             @db.VarChar(50)
+  created_at        DateTime?           @default(now()) @db.Timestamp(6)
+  updated_at        DateTime?           @default(now()) @updatedAt @db.Timestamp(6)
+  recipeIngredients RecipeIngredient[]
+
+  @@index([nom], map: "idx_ingredients_nom")
+  @@map("ingredients")
+}
+
+model RecipeIngredient {
+  id            Int        @id @default(autoincrement())
+  recipe_id     Int
+  ingredient_id Int
+  quantite      String?    @db.VarChar(100)
+  created_at    DateTime?  @default(now()) @db.Timestamp(6)
+  recipe        Recipe     @relation(fields: [recipe_id], references: [id], onDelete: Cascade)
+  ingredient    Ingredient @relation(fields: [ingredient_id], references: [id], onDelete: Cascade)
+
+  @@unique([recipe_id, ingredient_id], map: "uq_recipe_ingredient")
+  @@index([recipe_id], map: "idx_recipe_ingredient_recipe")
+  @@index([ingredient_id], map: "idx_recipe_ingredient_ingredient")
+  @@map("recipe_ingredients")
 }
 
 model MealPlan {

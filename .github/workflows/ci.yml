@@ -76,7 +76,6 @@ jobs:
       # Étape 3 : Créer le fichier .env minimal pour Symfony
       - name: Créer le fichier .env
         run: |
-          cd frontend
           cat > .env << 'EOF'
           APP_ENV=test
           APP_DEBUG=false
@@ -90,7 +89,7 @@ jobs:
       - name: Installer Composer
         uses: php-actions/composer@v6
         with:
-          working_dir: frontend
+          working_dir: .
 
       # Étape 5 : Installer les dépendances (sans scripts pour éviter cache:clear)
       - name: Installer les dépendances Composer
@@ -98,9 +97,7 @@ jobs:
 
       # Étape 6 : Vider le cache manuellement avec les variables d'environnement
       - name: Vider le cache Symfony
-        run: |
-          cd frontend
-          APP_ENV=test APP_SECRET=test-secret-key-for-ci-cd-only-not-for-production-use-32-chars DEFAULT_URI=http://localhost php bin/console cache:clear --no-warmup || true
+        run: APP_ENV=test APP_SECRET=test-secret-key-for-ci-cd-only-not-for-production-use-32-chars DEFAULT_URI=http://localhost php bin/console cache:clear --no-warmup || true
 
       # Étape 7 : Vérifier la syntaxe PHP
       - name: Vérifier la syntaxe PHP

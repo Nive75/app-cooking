@@ -9,6 +9,7 @@ import {
   ParseIntPipe,
   HttpCode,
   HttpStatus,
+  Query,
 } from '@nestjs/common';
 import { RecipesService } from './recipes.service';
 import { CreateRecipeDto } from './dto/create-recipe.dto';
@@ -25,8 +26,12 @@ export class RecipesController {
   }
 
   @Get()
-  findAll() {
-    return this.recipesService.findAll()
+  findAll(
+    @Query('category') category?: string,
+    @Query('search') search?: string,
+    @Query('favorites') favorites?: string,
+  ) {
+    return this.recipesService.findAll({ category, search, favorites: favorites === 'true' })
   }
 
   @Get(':id')

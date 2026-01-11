@@ -12,12 +12,34 @@ export class RecipesService {
     return this.prisma.recipe.create(args);
   }
 
-  async findAll() {
+  async findAll(filters?: { category?: string; search?: string; favorites?: boolean }) {
+    const where: any = {};
+
+    if (filters?.favorites) {
+      where.is_favorite = true;
+    }
+
+    if (filters?.search) {
+      where.OR = [
+        { titre: { contains: filters.search } },
+        { description: { contains: filters.search } },
+      ];
+    }
+
     const args = {
+      where,
       orderBy: {
         created_at: 'desc',
       },
+      include: {
+        recipeIngredients: {
+          include: {
+            ingredient: true,
+          },
+        },
+      },
     } as const;
+
     return this.prisma.recipe.findMany(args);
   }
 
@@ -26,6 +48,11 @@ export class RecipesService {
       where: { id },
       include: {
         mealPlans: true,
+        recipeIngredients: {
+          include: {
+            ingredient: true,
+          },
+        },
       },
     });
 
